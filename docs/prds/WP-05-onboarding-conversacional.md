@@ -32,8 +32,10 @@ que WP-04 establece.
 
 - Sincronizar `horario_clases` con Google Calendar automáticamente → Fase 1.5, WP-14, explícitamente
   "sin comprometer" en README §7.
-- El transporte real por Telegram (webhook → HTTP Request) → WP-06; este WP construye la lógica
-  de la conversación, no cómo llega el mensaje.
+- El transporte real (chat web en `web/`, llamando por HTTPS a la API de WP-04) → WP-20; este WP
+  construye la lógica de la conversación, no por dónde ni en qué UI llega el mensaje. **(v0.4)**
+  antes el transporte era Telegram vía WP-06 (retirado del camino de chat); la lógica de
+  onboarding en sí no cambia con el pivote, solo el canal por el que entra el mensaje.
 - Editar datos del onboarding después de completado (p. ej. añadir una asignatura a mitad de
   cuatrimestre) → no tiene WP propio todavía, candidato futuro si el uso real lo pide.
 

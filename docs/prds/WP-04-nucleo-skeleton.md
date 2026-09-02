@@ -16,12 +16,18 @@ subtitle: Fase 0
 
 ## Qué es
 
-Rellena `nucleo/agente.py` (hoy vacío) como punto de entrada: recibe una petición HTTP desde
-n8n, abre conexión a Postgres, registra el mensaje entrante en `mensajes` (usando
-`telegram_message_id` para idempotencia ante reintentos de webhook — WP-01), y deja el punto de
-enganche donde luego se conecta el LLM con function calling. Incluye `requirements.txt` (no
-existe hoy) y la estructura mínima de `nucleo/` que README §6 describe (`herramientas/`,
-`evaluacion/` como paquetes vacíos listos para poblarse).
+Rellena `nucleo/agente.py` (hoy vacío) como punto de entrada: expone una **API HTTP propia**
+(recomendado: FastAPI) que el frontend Next.js en `web/` llama **directamente** por HTTPS — ya
+no hay n8n en medio del camino de chat (README §3-4, cambio v0.3 → v0.4). El endpoint principal
+recibe el mensaje del usuario, abre conexión a Postgres (Supabase), registra el mensaje entrante
+en `mensajes`, y deja el punto de enganche donde luego se conecta el LLM con function calling.
+Devuelve la respuesta del agente como respuesta HTTP síncrona a esa misma petición. Incluye
+`requirements.txt` (no existe hoy) y la estructura mínima de `nucleo/` que README §6 describe
+(`herramientas/`, `evaluacion/` como paquetes vacíos listos para poblarse).
+
+Este WP fija el **contrato de petición/respuesta** entre `web/` y `nucleo/` — algo como
+`POST /mensaje { usuario_id, contenido } → { respuesta, ... }`, exacto a decidir en fill — porque
+WP-20 (frontend) y WP-21 (deploy/CORS) se construyen contra ese contrato.
 
 Este WP es deliberadamente delgado: no incluye lógica de negocio (ni onboarding, ni MCP, ni
 LLM) — solo el esqueleto que hace que "arrancar `python nucleo/agente.py`" sea real.
@@ -38,6 +44,11 @@ Postgres y el resto de credenciales que va a leer desde `.env`.
 - Cliente MCP y registro de servidores → WP-07.
 - LLM con function calling propiamente dicho (prompt, function-calling loop) → se introduce
   junto con WP-05 y WP-11, no aquí; este WP deja el enganche pero no la lógica de decisión.
+- La UI de chat que consume esta API → WP-20.
+- CORS/despliegue del núcleo en un host persistente (Railway u otro) → WP-21; este WP deja el
+  servidor arrancable en local, no lo despliega.
+- n8n como cliente de esta API para automatizaciones secundarias → WP-06, no en el camino de
+  Fase 1.
 
 ## Estado
 

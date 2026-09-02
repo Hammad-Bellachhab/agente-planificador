@@ -24,7 +24,7 @@ graph TD
   WP-18["WP-18 — Documentación de instalación"]
   WP-19["WP-19 — Open source readiness"]
   WP-20["WP-20 — Frontend — UI de chat real"]
-  WP-21["WP-21 — Infra y despliegue (Vercel + Supabase + Railway)"]
+  WP-21["WP-21 — Infra y despliegue (Vercel + Supabase + Google Cloud Run)"]
   WP-01 --> WP-02
   WP-01 --> WP-04
   WP-03 --> WP-04
@@ -79,4 +79,4 @@ graph TD
 | WP-18 | Documentación de instalación | skeleton | 0/5 | S | WP-11, WP-21 |  |
 | WP-19 | Open source readiness | skeleton | 0/5 | S | WP-18 |  |
 | WP-20 | Frontend — UI de chat real | skeleton | 0/10 | L | WP-04 |  |
-| WP-21 | Infra y despliegue (Vercel + Supabase + Railway) | skeleton | 0/8 | M | WP-01, WP-02, WP-04, WP-20 |  |
+| WP-21 | Infra y despliegue (Vercel + Supabase + Google Cloud Run) | skeleton | 0/8 | M | WP-01, WP-02, WP-04, WP-20 |  |

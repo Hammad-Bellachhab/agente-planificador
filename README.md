@@ -85,7 +85,11 @@ Notion, Calendar y Gmail se acceden vía **MCP** en vez de vía los nodos nativo
 
 **Qué es MCP aquí:** protocolo estándar por el que un cliente (el agente) pregunta a un servidor MCP qué herramientas ofrece y las invoca de forma uniforme, en vez de que cada integración tenga su propio SDK y su propia autenticación. Mismo concepto que usan Claude Desktop o Claude Code para hablar con Notion, Google Drive, etc.
 
-**Consecuencia arquitectónica:** un cliente MCP necesita vivir en algún sitio que hable el protocolo y que mantenga conexiones persistentes con cada servidor — algo que no encaja con funciones serverless (arrancan y mueren por petición). Por eso el núcleo Python **no vive en Vercel**: Vercel aloja solo el frontend Next.js; el núcleo corre como proceso persistente en un host aparte (por defecto, Railway — cambiable). n8n no tiene soporte nativo maduro de MCP a día de hoy, así que tampoco es candidato a alojar el cliente MCP.
+**Consecuencia arquitectónica:** un cliente MCP necesita vivir en algún sitio que hable el protocolo y que mantenga conexiones vivas con cada servidor mientras atiende peticiones — algo que no encaja con las funciones de Vercel (arrancan y mueren por petición individual, sin margen para mantener 3 subprocesos MCP). Por eso el núcleo Python **no vive en Vercel**: Vercel aloja solo el frontend Next.js; el núcleo corre en un contenedor aparte, en Google Cloud Run.
+
+> **Matiz sobre Cloud Run:** no es un servidor "siempre encendido" como una VM clásica — escala a cero tras un rato sin tráfico, y el primer request tras eso paga un cold start (arrancar el contenedor + reconectar los 3 servidores MCP). Mientras el contenedor está caliente, reutiliza las mismas conexiones MCP entre peticiones sin problema. Para una app personal de bajo tráfico es un compromiso razonable; si algún día el cold start molesta, la solución es fijar `min-instances=1` (dejar de escalar a cero, con coste).
+
+n8n no tiene soporte nativo maduro de MCP a día de hoy, así que tampoco es candidato a alojar el cliente MCP.
 
 ---
 
@@ -97,7 +101,7 @@ flowchart TB
         FE[Chat web]
     end
 
-    subgraph Nucleo["Núcleo del agente · Python (host persistente, p.ej. Railway)"]
+    subgraph Nucleo["Núcleo del agente · Python (contenedor, Google Cloud Run)"]
         API[API HTTP]
         LLM["LLM con function calling"]
         MCPC[Cliente MCP]
@@ -137,7 +141,7 @@ flowchart TB
 | Capa | Rol |
 |:---|:---|
 | **Interfaz (Next.js/Vercel)** | Chat web como único punto de entrada. Llama directamente a la API del núcleo por HTTPS — sin intermediario. |
-| **Núcleo (Python)** | LLM con function calling + cliente MCP. Proceso persistente en un host aparte de Vercel (por defecto Railway). Es donde vive toda la inteligencia del sistema. |
+| **Núcleo (Python)** | LLM con function calling + cliente MCP. Contenedor aparte de Vercel, en Google Cloud Run (escala a cero, ver nota en §3). Es donde vive toda la inteligencia del sistema. |
 | **Servidores MCP** | Notion, Calendar y Gmail, cada uno como servidor MCP independiente. |
 | **Persistencia (Supabase)** | Postgres gestionado. Registra cada interacción antes de responder: qué se dijo, qué herramienta se llamó, con qué argumentos, qué devolvió, si tuvo éxito. |
 | **Automatización (n8n)** | Fuera del camino de la conversación. Dispara acciones programadas (p. ej. Fase 1.5, recordatorios) llamando a la API del núcleo o a Supabase directamente. |
@@ -319,7 +323,7 @@ agente-planificador/
 ├── docs/
 │   ├── DISENO.md
 │   ├── prds/                     # Work Packages (skill prd-blueprint)
-│   ├── instalacion/               # un único camino de despliegue (Vercel + Railway + Supabase), no cuatro (ver §9)
+│   ├── instalacion/               # un único camino de despliegue (Vercel + Google Cloud Run + Supabase), no cuatro (ver §9)
 │   └── decisiones/
 └── .env.example
 ```
@@ -361,7 +365,7 @@ Meter la taxonomía en el onboarding convertiría la primera conversación en un
 | Pieza | Dónde vive |
 |:---|:---|
 | Frontend (Next.js) | Vercel |
-| Núcleo (Python) | Host persistente aparte de Vercel — por defecto Railway |
+| Núcleo (Python) | Contenedor aparte de Vercel — Google Cloud Run |
 | Postgres | Supabase (gestionado) |
 | n8n (automatizaciones secundarias) | Docker local, o n8n Cloud si se prefiere no autogestionarlo |
 
@@ -411,7 +415,7 @@ Si algún día se retoma la idea de publicar el repo como público e instalable 
 | Features | Basadas en el Second Brain (PARA): Inbox, Weekly Planner, To-Do Universidad, To-Do Proyectos Personales, To-Do del día, Habit Tracker, Finance Tracker, Daily Journal | Demasiado para una v1 — priorizado en [§7](#7-alcance-por-fases) |
 | **(v0.4)** Interfaz | Se sustituye Telegram por un frontend propio en Next.js | Deja de depender de la API de Bot de Telegram; abre la puerta a una UI más rica que texto plano |
 | **(v0.4)** Deploy del frontend | Vercel | Frontend y núcleo se despliegan por separado — Vercel no aloja bien procesos MCP persistentes (ver §3) |
-| **(v0.4)** Núcleo Python | Se mantiene, pero pasa a ser un proceso persistente en un host aparte de Vercel (por defecto Railway) | El frontend le habla por HTTPS directamente; ya no depende de que n8n reenvíe el webhook de Telegram |
+| **(v0.4)** Núcleo Python | Se mantiene, pero pasa a desplegarse como contenedor en Google Cloud Run, aparte de Vercel (evaluado Railway primero, descartado por ser solo trial gratis, no gratis permanente) | El frontend le habla por HTTPS directamente; ya no depende de que n8n reenvíe el webhook de Telegram. Cold start tras inactividad, ver §3 |
 | **(v0.4)** n8n | Se mantiene, pero deja de estar en el camino principal de la conversación | Pasa a un rol de automatizaciones secundarias (recordatorios, sync programado) — no es la Fase 1 |
 | **(v0.4)** Base de datos | Supabase (Postgres gestionado) en vez de Postgres en Docker | Un solo Postgres para local y producción; Docker queda solo para n8n en desarrollo |
 | **(v0.4)** Usuarios | Vuelve a ser app personal de un solo usuario (revierte la visión open-source de v0.2/v0.3, ver §12) | Sin Supabase Auth ni multi-tenancy; `usuarios` se simplifica a una fila sembrada al instalar |

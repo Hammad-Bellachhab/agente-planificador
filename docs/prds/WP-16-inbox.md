@@ -16,10 +16,12 @@ subtitle: Fase 3
 
 ## Qué es
 
-Captura rápida sin clasificar: el usuario manda algo por Telegram que quiere guardar sin decidir
-en el momento su tipo/materia/prioridad, y el agente lo deja en un "Inbox" (Notion) para
-procesar después. README §7 nota que es "de bajo impacto sin nada maduro debajo" — por eso vive
-después de que crear/editar/consultar tareas ya funcionen.
+Captura rápida sin clasificar: el usuario manda algo por el chat web que quiere guardar sin
+decidir en el momento su tipo/materia/prioridad, y el agente lo deja en un "Inbox" (Notion) para
+procesar después. **(v0.4)** antes el transporte de captura era Telegram; con el pivote de
+interfaz (README §2-4) es el mismo chat web de WP-20 — la lógica de "guardar sin clasificar" no
+cambia, solo el canal. README §7 nota que es "de bajo impacto sin nada maduro debajo" — por eso
+vive después de que crear/editar/consultar tareas ya funcionen.
 
 ## Por qué depende de WP-15
 

@@ -1,42 +1,55 @@
 ---
 id: WP-18
-title: Documentación de instalación (4 caminos)
+title: Documentación de instalación
 status: skeleton
-size: M
-depends_on: [WP-11]
+size: S
+depends_on: [WP-11, WP-21]
 owner: hammad
 external: false
 tasks_done: 0
-tasks_total: 8
+tasks_total: 5
 issue: null
-subtitle: Transversal
+subtitle: Transversal — pospuesto (ver README §12)
 ---
 
-# WP-18 — Documentación de instalación (4 caminos)
+# WP-18 — Documentación de instalación
 
 ## Qué es
 
-Escribe los cuatro documentos de `docs/instalacion/` (README §9): `localhost-docker.md`,
-`vps.md`, `dispositivo-propio.md`, `n8n-cloud.md`. No se elige uno solo — los cuatro se
-mantienen, cada uno probado literalmente antes de publicarse. En los tres primeros n8n corre en
-Docker junto a Postgres (mismo `docker-compose.yml`); en `n8n-cloud` n8n vive gestionado fuera y
-ese `docker-compose.yml` no incluye el servicio de n8n.
+**(v0.4) Pospuesto y reducido de alcance.** Este WP escribía cuatro documentos de instalación
+(`localhost-docker.md`, `vps.md`, `dispositivo-propio.md`, `n8n-cloud.md`) para que terceros
+desconocidos pudieran instalar el proyecto por caminos alternativos. Con el pivote a app
+personal de un solo usuario (README §2, §9, §13), esa sección deja de tener sentido tal cual:
+ya no hay "cuatro caminos" que documentar, hay **un único despliegue propio** — Vercel
+(frontend) + Railway (núcleo) + Supabase (Postgres), el mismo que ejecuta WP-21. Este WP pasa a
+escribir un solo documento en `docs/instalacion/` que registra ese despliegue paso a paso, para
+referencia futura propia (reinstalar en otra cuenta, recuperarse de un fallo) — no como
+onboarding para desconocidos.
 
-## Por qué depende de WP-11
+**Explícitamente pospuesto** (README §12): mientras el proyecto sea de un solo usuario, esto no
+es trabajo activo de roadmap. Se mantiene como PRD de referencia, no se borra, para cuando (si
+alguna vez) se retome la idea de publicar el repo.
 
-No tiene sentido documentar cómo instalar algo que todavía no hace nada útil de punta a punta —
-espera a que la Fase 1 / MVP (WP-11) exista para poder documentar un flujo real, verificable,
-no aspiracional. Es deliberadamente un WP tardío/transversal: puede iterar en paralelo a Fase
-1.x/2/3 según el usuario mencionó, no bloquea nada aguas abajo salvo WP-19.
+## Por qué depende de WP-11, WP-21
+
+Sigue sin tener sentido documentar cómo instalar algo que todavía no hace nada útil de punta a
+punta — espera a la Fase 1 / MVP (WP-11). Añade WP-21 (v0.4): el documento describe un
+despliegue real Vercel + Railway + Supabase, así que no puede escribirse verificado hasta que
+ese despliegue (WP-21) se haya ejecutado al menos una vez.
 
 ## Fuera de alcance
 
 - El propio `docker-compose.yml` y `.env.example` como artefactos de config → WP-03, este WP
   solo los documenta y los prueba, no los diseña desde cero.
+- La ejecución del despliegue en sí (crear los proyectos, aplicar el esquema, conectar las
+  piezas) → WP-21; este WP solo documenta ese proceso una vez ejecutado.
+- Los cuatro documentos de instalación multi-camino originales → retirados en v0.4 junto con la
+  visión open-source (README §12, §13); no se retoman mientras sea app de un solo usuario.
 - Configuración del proyecto de Google Cloud en modo Testing para Gmail (WP-17) → se documenta
-  aquí como parte de `docs/instalacion/`, pero solo tiene sentido una vez WP-17 exista; puede
-  añadirse como sección incremental sin bloquear la primera versión de estos cuatro documentos.
+  aquí como sección incremental una vez WP-17 exista, sin bloquear la primera versión.
 
 ## Estado
 
-Esqueleto sin especificar. Ejecutar fase de "fill" antes de construir.
+Esqueleto sin especificar, **pospuesto** — no es trabajo activo de roadmap mientras el proyecto
+sea de un solo usuario (README §12). Se retoma la fase de "fill" si/cuando se reabra la
+intención open source.

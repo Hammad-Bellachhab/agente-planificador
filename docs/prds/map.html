@@ -158,7 +158,7 @@ svg#edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; poin
   </svg>
   <div class="layer">
 <div class="node planned critical" data-id="WP-01"><div class="id">01&nbsp;&nbsp;ESQUEMA POSTGRESQL</div><div class="name">Esquema PostgreSQL</div><div class="subtitle">Fase 0</div><div class="frac">0/13</div></div>
-<div class="node planned" data-id="WP-03"><div class="id">03&nbsp;&nbsp;INFRA LOCAL (DOCKER + ENV)</div><div class="name">Infra local (Docker + env)</div><div class="subtitle">Fase 0</div><div class="frac">0/5</div></div>
+<div class="node planned" data-id="WP-03"><div class="id">03&nbsp;&nbsp;INFRA LOCAL (DOCKER N8N + ENV)</div><div class="name">Infra local (Docker n8n + env)</div><div class="subtitle">Fase 0</div><div class="frac">0/5</div></div>
 </div>
 <div class="layer">
 <div class="node planned" data-id="WP-02"><div class="id">02&nbsp;&nbsp;SEED DE TAXONOMÍA</div><div class="name">Seed de taxonomía</div><div class="subtitle">Fase 0</div><div class="frac">0/5</div></div>
@@ -166,13 +166,15 @@ svg#edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; poin
 </div>
 <div class="layer">
 <div class="node planned" data-id="WP-05"><div class="id">05&nbsp;&nbsp;ONBOARDING CONVERSACIONAL</div><div class="name">Onboarding conversacional</div><div class="subtitle">Fase 0</div><div class="frac">0/13</div></div>
-<div class="node planned" data-id="WP-06"><div class="id">06&nbsp;&nbsp;RELAY N8N (TELEGRAM → NÚCLEO)</div><div class="name">Relay n8n (Telegram → núcleo)</div><div class="subtitle">Fase 0</div><div class="frac">0/5</div></div>
+<div class="node planned" data-id="WP-06"><div class="id">06&nbsp;&nbsp;N8N — AUTOMATIZACIONES SECUNDARIAS (OPCIONAL)</div><div class="name">n8n — automatizaciones secundarias (opcional)</div><div class="subtitle">Fase 1.5+ — opcional, fuera del camino de Fase 1</div><div class="frac">0/5</div></div>
 <div class="node planned critical" data-id="WP-07"><div class="id">07&nbsp;&nbsp;CLIENTE MCP (PLUMBING MULTI-SERVIDOR)</div><div class="name">Cliente MCP (plumbing multi-servidor)</div><div class="subtitle">Fase 1</div><div class="frac">0/8</div></div>
 <div class="node planned" data-id="WP-09"><div class="id">09&nbsp;&nbsp;CLIENTE OAUTH DE GOOGLE (COMPARTIDO)</div><div class="name">Cliente OAuth de Google (compartido)</div><div class="subtitle">Fase 1</div><div class="frac">0/5</div></div>
+<div class="node planned" data-id="WP-20"><div class="id">20&nbsp;&nbsp;FRONTEND — UI DE CHAT REAL</div><div class="name">Frontend — UI de chat real</div><div class="subtitle">Fase 1 — interfaz (nuevo en v0.4)</div><div class="frac">0/10</div></div>
 </div>
 <div class="layer">
 <div class="node planned critical" data-id="WP-08"><div class="id">08&nbsp;&nbsp;NOTION MCP — CAPA DE TRADUCCIÓN</div><div class="name">Notion MCP — capa de traducción</div><div class="subtitle">Fase 1</div><div class="frac">0/13</div></div>
 <div class="node planned" data-id="WP-10"><div class="id">10&nbsp;&nbsp;CALENDAR MCP — SERVIDOR PROPIO</div><div class="name">Calendar MCP — servidor propio</div><div class="subtitle">Fase 1</div><div class="frac">0/8</div></div>
+<div class="node planned" data-id="WP-21"><div class="id">21&nbsp;&nbsp;INFRA Y DESPLIEGUE (VERCEL + SUPABASE + RAILWAY)</div><div class="name">Infra y despliegue (Vercel + Supabase + Railway)</div><div class="subtitle">Transversal — despliegue (nuevo en v0.4)</div><div class="frac">0/8</div></div>
 </div>
 <div class="layer">
 <div class="node planned critical" data-id="WP-11"><div class="id">11&nbsp;&nbsp;HERRAMIENTA CREAR_TAREA_UNIVERSIDAD</div><div class="name">Herramienta crear_tarea_universidad</div><div class="subtitle">Fase 1 — MVP</div><div class="frac">0/8</div></div>
@@ -181,11 +183,11 @@ svg#edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; poin
 <div class="layer">
 <div class="node planned critical" data-id="WP-12"><div class="id">12&nbsp;&nbsp;CASOS DE EVALUACIÓN — FASE 1</div><div class="name">Casos de evaluación — Fase 1</div><div class="subtitle">Fase 1 — gate de salida</div><div class="frac">0/5</div></div>
 <div class="node planned" data-id="WP-13"><div class="id">13&nbsp;&nbsp;EDITAR_TAREA / ELIMINAR_TAREA + CONFIRMACIONES</div><div class="name">editar_tarea / eliminar_tarea + confirmaciones</div><div class="subtitle">Fase 1.x</div><div class="frac">0/13</div></div>
-<div class="node planned" data-id="WP-18"><div class="id">18&nbsp;&nbsp;DOCUMENTACIÓN DE INSTALACIÓN (4 CAMINOS)</div><div class="name">Documentación de instalación (4 caminos)</div><div class="subtitle">Transversal</div><div class="frac">0/8</div></div>
+<div class="node planned" data-id="WP-18"><div class="id">18&nbsp;&nbsp;DOCUMENTACIÓN DE INSTALACIÓN</div><div class="name">Documentación de instalación</div><div class="subtitle">Transversal — pospuesto (ver README §12)</div><div class="frac">0/5</div></div>
 </div>
 <div class="layer">
 <div class="node planned critical" data-id="WP-15"><div class="id">15&nbsp;&nbsp;CONSULTAS DE LECTURA</div><div class="name">Consultas de lectura</div><div class="subtitle">Fase 2</div><div class="frac">0/13</div></div>
-<div class="node planned" data-id="WP-19"><div class="id">19&nbsp;&nbsp;OPEN SOURCE READINESS</div><div class="name">Open source readiness</div><div class="subtitle">Transversal — gate final antes de publicar</div><div class="frac">0/5</div></div>
+<div class="node planned" data-id="WP-19"><div class="id">19&nbsp;&nbsp;OPEN SOURCE READINESS</div><div class="name">Open source readiness</div><div class="subtitle">Transversal — pospuesto, gate futuro (ver README §12)</div><div class="frac">0/5</div></div>
 </div>
 <div class="layer">
 <div class="node planned" data-id="WP-16"><div class="id">16&nbsp;&nbsp;INBOX — CAPTURA RÁPIDA</div><div class="name">Inbox — captura rápida</div><div class="subtitle">Fase 3</div><div class="frac">0/5</div></div>
@@ -205,13 +207,14 @@ const GRAPH = {
     "deps": [],
     "unlocks": [
       "WP-02",
-      "WP-04"
+      "WP-04",
+      "WP-21"
     ],
     "critical": true,
     "external": false
   },
   "WP-03": {
-    "title": "Infra local (Docker + env)",
+    "title": "Infra local (Docker n8n + env)",
     "status": "skeleton",
     "tasks_done": 0,
     "tasks_total": 5,
@@ -230,7 +233,9 @@ const GRAPH = {
     "deps": [
       "WP-01"
     ],
-    "unlocks": [],
+    "unlocks": [
+      "WP-21"
+    ],
     "critical": false,
     "external": false
   },
@@ -247,7 +252,9 @@ const GRAPH = {
       "WP-05",
       "WP-06",
       "WP-07",
-      "WP-09"
+      "WP-09",
+      "WP-20",
+      "WP-21"
     ],
     "critical": true,
     "external": false
@@ -268,7 +275,7 @@ const GRAPH = {
     "external": false
   },
   "WP-06": {
-    "title": "Relay n8n (Telegram → núcleo)",
+    "title": "n8n — automatizaciones secundarias (opcional)",
     "status": "skeleton",
     "tasks_done": 0,
     "tasks_total": 5,
@@ -310,6 +317,20 @@ const GRAPH = {
     "critical": false,
     "external": false
   },
+  "WP-20": {
+    "title": "Frontend — UI de chat real",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 10,
+    "deps": [
+      "WP-04"
+    ],
+    "unlocks": [
+      "WP-21"
+    ],
+    "critical": false,
+    "external": false
+  },
   "WP-08": {
     "title": "Notion MCP — capa de traducción",
     "status": "skeleton",
@@ -336,6 +357,23 @@ const GRAPH = {
     "unlocks": [
       "WP-11",
       "WP-14"
+    ],
+    "critical": false,
+    "external": false
+  },
+  "WP-21": {
+    "title": "Infra y despliegue (Vercel + Supabase + Railway)",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 8,
+    "deps": [
+      "WP-01",
+      "WP-02",
+      "WP-04",
+      "WP-20"
+    ],
+    "unlocks": [
+      "WP-18"
     ],
     "critical": false,
     "external": false
@@ -398,12 +436,13 @@ const GRAPH = {
     "external": false
   },
   "WP-18": {
-    "title": "Documentación de instalación (4 caminos)",
+    "title": "Documentación de instalación",
     "status": "skeleton",
     "tasks_done": 0,
-    "tasks_total": 8,
+    "tasks_total": 5,
     "deps": [
-      "WP-11"
+      "WP-11",
+      "WP-21"
     ],
     "unlocks": [
       "WP-19"

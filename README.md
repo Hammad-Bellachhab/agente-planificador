@@ -249,12 +249,13 @@ CREATE TABLE examenes (
     notas           TEXT
 );
 
--- Taxonomía personalizable del sistema (§8) — sustituye enums fijos
+-- Taxonomía personalizable del sistema (§8) — sustituye enums fijos.
+-- 'estado' NO está aquí: tareas.estado es CHECK fijo (arriba), no taxonomía editable.
 CREATE TABLE taxonomia (
     id            SERIAL PRIMARY KEY,
     usuario_id    INTEGER NOT NULL REFERENCES usuarios(id),
     campo         TEXT NOT NULL CHECK (campo IN
-                   ('tipo','prioridad','tiempo_estimado','energia','estado')),
+                   ('tipo','prioridad','tiempo_estimado','energia')),
     valor         TEXT NOT NULL,
     orden         INTEGER,
     UNIQUE(usuario_id, campo, valor)

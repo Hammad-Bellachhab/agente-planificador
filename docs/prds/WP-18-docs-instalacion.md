@@ -21,7 +21,7 @@ subtitle: Transversal — pospuesto (ver README §12)
 desconocidos pudieran instalar el proyecto por caminos alternativos. Con el pivote a app
 personal de un solo usuario (README §2, §9, §13), esa sección deja de tener sentido tal cual:
 ya no hay "cuatro caminos" que documentar, hay **un único despliegue propio** — Vercel
-(frontend) + Railway (núcleo) + Supabase (Postgres), el mismo que ejecuta WP-21. Este WP pasa a
+(frontend) + Google Cloud Run (núcleo) + Supabase (Postgres), el mismo que ejecuta WP-21. Este WP pasa a
 escribir un solo documento en `docs/instalacion/` que registra ese despliegue paso a paso, para
 referencia futura propia (reinstalar en otra cuenta, recuperarse de un fallo) — no como
 onboarding para desconocidos.
@@ -34,7 +34,7 @@ alguna vez) se retome la idea de publicar el repo.
 
 Sigue sin tener sentido documentar cómo instalar algo que todavía no hace nada útil de punta a
 punta — espera a la Fase 1 / MVP (WP-11). Añade WP-21 (v0.4): el documento describe un
-despliegue real Vercel + Railway + Supabase, así que no puede escribirse verificado hasta que
+despliegue real Vercel + Google Cloud Run + Supabase, así que no puede escribirse verificado hasta que
 ese despliegue (WP-21) se haya ejecutado al menos una vez.
 
 ## Fuera de alcance

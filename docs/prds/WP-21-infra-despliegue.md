@@ -1,6 +1,6 @@
 ---
 id: WP-21
-title: Infra y despliegue (Vercel + Supabase + Railway)
+title: Infra y despliegue (Vercel + Supabase + Cloud Run)
 status: skeleton
 size: M
 depends_on: [WP-01, WP-02, WP-04, WP-20]
@@ -12,7 +12,7 @@ issue: null
 subtitle: Transversal — despliegue (nuevo en v0.4)
 ---
 
-# WP-21 — Infra y despliegue (Vercel + Supabase + Railway)
+# WP-21 — Infra y despliegue (Vercel + Supabase + Cloud Run)
 
 ## Qué es
 
@@ -25,13 +25,15 @@ que hay que aprovisionar y conectar:
 - **Supabase**: crear el proyecto, aplicar `db/schema.sql` y `db/seed.sql` contra su Postgres
   gestionado (`psql "$SUPABASE_DB_URL" -f db/schema.sql` — comando ya documentado en README
   "Entorno de desarrollo").
-- **Railway** (o el host persistente elegido): desplegar `nucleo/agente.py` como proceso
-  persistente — no como función serverless, ver README §3 sobre por qué el cliente MCP no
-  encaja en Vercel.
+- **Google Cloud Run**: desplegar `nucleo/agente.py` como contenedor (hace falta un
+  `nucleo/Dockerfile`, no existe hoy — tarea de este WP). Cloud Run no es un servidor
+  siempre-encendido: escala a cero tras inactividad, cold start en el siguiente request (arranca
+  el contenedor + reconecta los 3 servidores MCP). Se descartó Railway por ser solo trial
+  gratuito, no gratis permanente — ver README §3, §13.
 - **Conectar las tres piezas** por variables de entorno: `SUPABASE_DB_URL` (núcleo → Supabase),
-  `NUCLEO_API_URL` (frontend en Vercel → núcleo en Railway), credenciales de cada servidor MCP
-  (núcleo → Notion/Calendar/Gmail), y CORS en el núcleo para aceptar peticiones desde el
-  dominio de Vercel.
+  `NUCLEO_API_URL` (frontend en Vercel → núcleo en Google Cloud Run), credenciales de cada
+  servidor MCP (núcleo → Notion/Calendar/Gmail), y CORS en el núcleo para aceptar peticiones
+  desde el dominio de Vercel.
 
 Es la ejecución real del despliegue; `.env.example`/`docker-compose.yml` (WP-03) son plantillas
 de config para desarrollo local, distintas de este WP.
@@ -41,7 +43,7 @@ de config para desarrollo local, distintas de este WP.
 - **WP-01**: no hay nada que aplicar contra Supabase sin `schema.sql` relleno.
 - **WP-02**: `seed.sql` debe aplicarse junto al esquema para que la taxonomía tenga valores por
   defecto desde el primer despliegue (README §8).
-- **WP-04**: no hay núcleo que desplegar en Railway sin el esqueleto de la API.
+- **WP-04**: no hay núcleo que desplegar en Google Cloud Run sin el esqueleto de la API.
 - **WP-20**: no hay frontend real que desplegar en Vercel sin la UI de chat — desplegar el
   boilerplate por defecto de `create-next-app` no demuestra que las tres piezas están
   conectadas de verdad.

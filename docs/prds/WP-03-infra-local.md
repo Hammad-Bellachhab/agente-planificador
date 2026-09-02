@@ -27,7 +27,7 @@ retirada) ni `DATABASE_URL` de un Postgres local (sustituido por `SUPABASE_DB_UR
 
 **Decisión de diseño (resuelve la duda que el usuario planteó):** este WP se queda como
 "solo desarrollo local" — plantilla de env y Docker de n8n para trabajar en el equipo del autor.
-El aprovisionamiento real de Vercel/Supabase/Railway y el cableado de esas tres piezas en
+El aprovisionamiento real de Vercel/Supabase/Google Cloud Run y el cableado de esas tres piezas en
 producción es un WP nuevo, WP-21, porque es una responsabilidad distinta (ejecutar
 provisioning contra servicios cloud reales, no escribir plantillas de config) y depende de que
 WP-01 y WP-04 ya existan, cosa que WP-03 no necesita.
@@ -41,7 +41,7 @@ contenido para existir. Puede construirse en paralelo con WP-01.
 
 - El documento único de instalación (antes "cuatro caminos") → WP-18, ese es documentación de
   uso, esto es la config base que ese documento referencia.
-- Aprovisionar los proyectos reales de Vercel, Supabase y Railway, y conectar sus variables de
+- Aprovisionar los proyectos reales de Vercel, Supabase y Google Cloud Run, y conectar sus variables de
   entorno en producción → WP-21 (nuevo en v0.4).
 - Gestión de secretos en producción (vault, etc.) → fuera de alcance, proyecto personal de
   instalación individual (README §12), no multi-tenant.

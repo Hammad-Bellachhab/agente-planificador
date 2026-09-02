@@ -45,8 +45,8 @@ Postgres y el resto de credenciales que va a leer desde `.env`.
 - LLM con function calling propiamente dicho (prompt, function-calling loop) → se introduce
   junto con WP-05 y WP-11, no aquí; este WP deja el enganche pero no la lógica de decisión.
 - La UI de chat que consume esta API → WP-20.
-- CORS/despliegue del núcleo en un host persistente (Railway u otro) → WP-21; este WP deja el
-  servidor arrancable en local, no lo despliega.
+- CORS/despliegue del núcleo en Google Cloud Run → WP-21; este WP deja el servidor arrancable
+  en local, no lo despliega ni escribe el `Dockerfile`.
 - n8n como cliente de esta API para automatizaciones secundarias → WP-06, no en el camino de
   Fase 1.
 

@@ -2,6 +2,8 @@
 
 # 🤖 Agente de Planificación Personal
 
+![Banner](docs/assets/banner.png)
+
 ### Chat web (Next.js) · Notion + Google Calendar + Gmail vía MCP · Supabase como memoria persistente
 
 <br>

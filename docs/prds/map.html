@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>ROADMAP</title>
+<style>
+:root {
+  --bg: #080b14;
+  --bg-panel: #0d1220;
+  --grid-line: #131a2b;
+  --border-dim: #262c3d;
+  --text-dim: #545c72;
+  --blue: #4d7fff;
+  --blue-bright: #6fa0ff;
+  --blue-glow: rgba(77,127,255,0.55);
+  --amber: #ff9d42;
+  --amber-glow: rgba(255,157,66,0.6);
+  --text: #c9d4f0;
+  --mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background:
+    linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 40px 40px,
+    var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  min-height: 100vh;
+  padding: 48px 24px 96px;
+}
+h1.title {
+  text-align: center;
+  font-size: 30px;
+  letter-spacing: 6px;
+  color: var(--blue-bright);
+  text-shadow: 0 0 18px var(--blue-glow);
+  margin: 0 0 10px;
+}
+p.subtitle {
+  text-align: center;
+  color: #7d88a6;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 14px;
+  max-width: 480px;
+  margin: 0 auto 22px;
+  line-height: 1.5;
+}
+.legend {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 11px;
+  color: #8b93ab;
+  margin-bottom: 44px;
+  flex-wrap: wrap;
+}
+.legend > * { margin: 0 11px; }
+.legend .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+.dot.complete { background: var(--blue); box-shadow: 0 0 6px var(--blue-glow); }
+.dot.in_progress { background: var(--blue-bright); box-shadow: 0 0 8px var(--blue-glow); }
+.dot.planned { background: #3a4258; }
+button#clear-btn {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  color: #8b93ab;
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+button#clear-btn:hover { border-color: var(--blue); color: var(--blue-bright); }
+
+#canvas-wrap { position: relative; max-width: 1300px; margin: 0 auto; }
+svg#edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.layer { display: flex; justify-content: center; gap: 24px; margin-bottom: 66px; flex-wrap: wrap; position: relative; z-index: 1; }
+
+.node {
+  width: 210px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  border-radius: 6px;
+  padding: 10px 12px 9px;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+  position: relative;
+}
+.node:hover { transform: translateY(-2px); }
+.node .id { font-size: 10px; color: #6a7290; font-weight: 700; }
+.node .name { font-size: 12px; font-weight: 700; margin-top: 2px; letter-spacing: .3px; }
+.node .subtitle { font-size: 9px; color: #6a7290; margin-top: 1px; font-style: italic; }
+.node .frac { position: absolute; bottom: 8px; right: 11px; font-size: 10px; }
+
+.node.complete { border-color: #345088; }
+.node.complete .id { color: var(--blue-bright); }
+.node.complete .frac { color: var(--blue-bright); }
+
+.node.in_progress { border-color: var(--blue); box-shadow: 0 0 16px var(--blue-glow); }
+.node.in_progress .id { color: var(--amber); }
+.node.in_progress .frac { color: var(--blue-bright); }
+
+.node.planned { opacity: .45; }
+.node.planned .id, .node.planned .name, .node.planned .frac, .node.planned .subtitle { color: var(--text-dim); }
+
+.node.critical::before {
+  content: "";
+  position: absolute; left: -1px; top: -1px; bottom: -1px; width: 3px;
+  background: var(--amber); border-radius: 6px 0 0 6px;
+  box-shadow: 0 0 8px var(--amber-glow);
+}
+.node.external { border-style: dashed; }
+
+.node.dim-out { opacity: .18 !important; }
+.node.highlight-pred { box-shadow: 0 0 14px rgba(255,157,66,.5); border-color: var(--amber); }
+.node.highlight-succ { box-shadow: 0 0 14px var(--blue-glow); border-color: var(--blue-bright); }
+
+#detail-panel {
+  max-width: 640px;
+  margin: 40px auto 0;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  border-radius: 6px;
+  padding: 16px 20px;
+  font-size: 12px;
+  display: none;
+}
+#detail-panel h3 { margin: 0 0 8px; color: var(--blue-bright); font-size: 13px; }
+#detail-panel .row { margin: 4px 0; color: #9aa4c0; }
+#detail-panel .row b { color: var(--text); }
+</style>
+</head>
+<body>
+<h1 class="title">ROADMAP</h1>
+<p class="subtitle">Click any phase to see its prerequisites and what it unlocks downstream.</p>
+<div class="legend">
+  <span><span class="dot complete"></span>Complete</span>
+  <span><span class="dot in_progress"></span>In Progress</span>
+  <span><span class="dot planned"></span>Planned</span>
+  <button id="clear-btn">&times; Clear selection</button>
+</div>
+
+<div id="canvas-wrap">
+  <svg id="edges">
+    <defs>
+      <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#4d7fff"></path>
+      </marker>
+      <marker id="arrow-amber" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#ff9d42"></path>
+      </marker>
+      <marker id="arrow-dim" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#3a4258"></path>
+      </marker>
+    </defs>
+  </svg>
+  <div class="layer">
+<div class="node planned critical" data-id="WP-01"><div class="id">01&nbsp;&nbsp;ESQUEMA POSTGRESQL</div><div class="name">Esquema PostgreSQL</div><div class="subtitle">Fase 0</div><div class="frac">0/13</div></div>
+<div class="node planned" data-id="WP-03"><div class="id">03&nbsp;&nbsp;INFRA LOCAL (DOCKER + ENV)</div><div class="name">Infra local (Docker + env)</div><div class="subtitle">Fase 0</div><div class="frac">0/5</div></div>
+</div>
+<div class="layer">
+<div class="node planned" data-id="WP-02"><div class="id">02&nbsp;&nbsp;SEED DE TAXONOMÍA</div><div class="name">Seed de taxonomía</div><div class="subtitle">Fase 0</div><div class="frac">0/5</div></div>
+<div class="node planned critical" data-id="WP-04"><div class="id">04&nbsp;&nbsp;ESQUELETO DEL NÚCLEO PYTHON</div><div class="name">Esqueleto del núcleo Python</div><div class="subtitle">Fase 0</div><div class="frac">0/8</div></div>
+</div>
+<div class="layer">
+<div class="node planned" data-id="WP-05"><div class="id">05&nbsp;&nbsp;ONBOARDING CONVERSACIONAL</div><div class="name">Onboarding conversacional</div><div class="subtitle">Fase 0</div><div class="frac">0/13</div></div>
+<div class="node planned" data-id="WP-06"><div class="id">06&nbsp;&nbsp;RELAY N8N (TELEGRAM → NÚCLEO)</div><div class="name">Relay n8n (Telegram → núcleo)</div><div class="subtitle">Fase 0</div><div class="frac">0/5</div></div>
+<div class="node planned critical" data-id="WP-07"><div class="id">07&nbsp;&nbsp;CLIENTE MCP (PLUMBING MULTI-SERVIDOR)</div><div class="name">Cliente MCP (plumbing multi-servidor)</div><div class="subtitle">Fase 1</div><div class="frac">0/8</div></div>
+<div class="node planned" data-id="WP-09"><div class="id">09&nbsp;&nbsp;CLIENTE OAUTH DE GOOGLE (COMPARTIDO)</div><div class="name">Cliente OAuth de Google (compartido)</div><div class="subtitle">Fase 1</div><div class="frac">0/5</div></div>
+</div>
+<div class="layer">
+<div class="node planned critical" data-id="WP-08"><div class="id">08&nbsp;&nbsp;NOTION MCP — CAPA DE TRADUCCIÓN</div><div class="name">Notion MCP — capa de traducción</div><div class="subtitle">Fase 1</div><div class="frac">0/13</div></div>
+<div class="node planned" data-id="WP-10"><div class="id">10&nbsp;&nbsp;CALENDAR MCP — SERVIDOR PROPIO</div><div class="name">Calendar MCP — servidor propio</div><div class="subtitle">Fase 1</div><div class="frac">0/8</div></div>
+</div>
+<div class="layer">
+<div class="node planned critical" data-id="WP-11"><div class="id">11&nbsp;&nbsp;HERRAMIENTA CREAR_TAREA_UNIVERSIDAD</div><div class="name">Herramienta crear_tarea_universidad</div><div class="subtitle">Fase 1 — MVP</div><div class="frac">0/8</div></div>
+<div class="node planned" data-id="WP-14"><div class="id">14&nbsp;&nbsp;SYNC HORARIO_CLASES → CALENDAR (OPCIONAL)</div><div class="name">Sync horario_clases → Calendar (opcional)</div><div class="subtitle">Fase 1.5 (opcional, sin comprometer)</div><div class="frac">0/5</div></div>
+</div>
+<div class="layer">
+<div class="node planned critical" data-id="WP-12"><div class="id">12&nbsp;&nbsp;CASOS DE EVALUACIÓN — FASE 1</div><div class="name">Casos de evaluación — Fase 1</div><div class="subtitle">Fase 1 — gate de salida</div><div class="frac">0/5</div></div>
+<div class="node planned" data-id="WP-13"><div class="id">13&nbsp;&nbsp;EDITAR_TAREA / ELIMINAR_TAREA + CONFIRMACIONES</div><div class="name">editar_tarea / eliminar_tarea + confirmaciones</div><div class="subtitle">Fase 1.x</div><div class="frac">0/13</div></div>
+<div class="node planned" data-id="WP-18"><div class="id">18&nbsp;&nbsp;DOCUMENTACIÓN DE INSTALACIÓN (4 CAMINOS)</div><div class="name">Documentación de instalación (4 caminos)</div><div class="subtitle">Transversal</div><div class="frac">0/8</div></div>
+</div>
+<div class="layer">
+<div class="node planned critical" data-id="WP-15"><div class="id">15&nbsp;&nbsp;CONSULTAS DE LECTURA</div><div class="name">Consultas de lectura</div><div class="subtitle">Fase 2</div><div class="frac">0/13</div></div>
+<div class="node planned" data-id="WP-19"><div class="id">19&nbsp;&nbsp;OPEN SOURCE READINESS</div><div class="name">Open source readiness</div><div class="subtitle">Transversal — gate final antes de publicar</div><div class="frac">0/5</div></div>
+</div>
+<div class="layer">
+<div class="node planned" data-id="WP-16"><div class="id">16&nbsp;&nbsp;INBOX — CAPTURA RÁPIDA</div><div class="name">Inbox — captura rápida</div><div class="subtitle">Fase 3</div><div class="frac">0/5</div></div>
+<div class="node planned critical external" data-id="WP-17"><div class="id">17&nbsp;&nbsp;GMAIL MCP — LEER Y REDACTAR</div><div class="name">Gmail MCP — leer y redactar</div><div class="subtitle">Fase 3 — bloqueador externo (OAuth Testing)</div><div class="frac">0/8</div></div>
+</div>
+</div>
+
+<div id="detail-panel"></div>
+
+<script>
+const GRAPH = {
+  "WP-01": {
+    "title": "Esquema PostgreSQL",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 13,
+    "deps": [],
+    "unlocks": [
+      "WP-02",
+      "WP-04"
+    ],
+    "critical": true,
+    "external": false
+  },
+  "WP-03": {
+    "title": "Infra local (Docker + env)",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 5,
+    "deps": [],
+    "unlocks": [
+      "WP-04"
+    ],
+    "critical": false,
+    "external": false
+  },
+  "WP-02": {
+    "title": "Seed de taxonomía",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 5,
+    "deps": [
+      "WP-01"
+    ],
+    "unlocks": [],
+    "critical": false,
+    "external": false
+  },
+  "WP-04": {
+    "title": "Esqueleto del núcleo Python",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 8,
+    "deps": [
+      "WP-01",
+      "WP-03"
+    ],
+    "unlocks": [
+      "WP-05",
+      "WP-06",
+      "WP-07",
+      "WP-09"
+    ],
+    "critical": true,
+    "external": false
+  },
+  "WP-05": {
+    "title": "Onboarding conversacional",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 13,
+    "deps": [
+      "WP-04"
+    ],
+    "unlocks": [
+      "WP-11",
+      "WP-14"
+    ],
+    "critical": false,
+    "external": false
+  },
+  "WP-06": {
+    "title": "Relay n8n (Telegram → núcleo)",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 5,
+    "deps": [
+      "WP-04"
+    ],
+    "unlocks": [],
+    "critical": false,
+    "external": false
+  },
+  "WP-07": {
+    "title": "Cliente MCP (plumbing multi-servidor)",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 8,
+    "deps": [
+      "WP-04"
+    ],
+    "unlocks": [
+      "WP-08",
+      "WP-10",
+      "WP-17"
+    ],
+    "critical": true,
+    "external": false
+  },
+  "WP-09": {
+    "title": "Cliente OAuth de Google (compartido)",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 5,
+    "deps": [
+      "WP-04"
+    ],
+    "unlocks": [
+      "WP-10",
+      "WP-17"
+    ],
+    "critical": false,
+    "external": false
+  },
+  "WP-08": {
+    "title": "Notion MCP — capa de traducción",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 13,
+    "deps": [
+      "WP-07"
+    ],
+    "unlocks": [
+      "WP-11"
+    ],
+    "critical": true,
+    "external": false
+  },
+  "WP-10": {
+    "title": "Calendar MCP — servidor propio",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 8,
+    "deps": [
+      "WP-09",
+      "WP-07"
+    ],
+    "unlocks": [
+      "WP-11",
+      "WP-14"
+    ],
+    "critical": false,
+    "external": false
+  },
+  "WP-11": {
+    "title": "Herramienta crear_tarea_universidad",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 8,
+    "deps": [
+      "WP-08",
+      "WP-10",
+      "WP-05"
+    ],
+    "unlocks": [
+      "WP-12",
+      "WP-13",
+      "WP-18"
+    ],
+    "critical": true,
+    "external": false
+  },
+  "WP-14": {
+    "title": "Sync horario_clases → Calendar (opcional)",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 5,
+    "deps": [
+      "WP-05",
+      "WP-10"
+    ],
+    "unlocks": [],
+    "critical": false,
+    "external": false
+  },
+  "WP-12": {
+    "title": "Casos de evaluación — Fase 1",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 5,
+    "deps": [
+      "WP-11"
+    ],
+    "unlocks": [
+      "WP-15"
+    ],
+    "critical": true,
+    "external": false
+  },
+  "WP-13": {
+    "title": "editar_tarea / eliminar_tarea + confirmaciones",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 13,
+    "deps": [
+      "WP-11"
+    ],
+    "unlocks": [],
+    "critical": false,
+    "external": false
+  },
+  "WP-18": {
+    "title": "Documentación de instalación (4 caminos)",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 8,
+    "deps": [
+      "WP-11"
+    ],
+    "unlocks": [
+      "WP-19"
+    ],
+    "critical": false,
+    "external": false
+  },
+  "WP-15": {
+    "title": "Consultas de lectura",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 13,
+    "deps": [
+      "WP-12"
+    ],
+    "unlocks": [
+      "WP-16",
+      "WP-17"
+    ],
+    "critical": true,
+    "external": false
+  },
+  "WP-19": {
+    "title": "Open source readiness",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 5,
+    "deps": [
+      "WP-18"
+    ],
+    "unlocks": [],
+    "critical": false,
+    "external": false
+  },
+  "WP-16": {
+    "title": "Inbox — captura rápida",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 5,
+    "deps": [
+      "WP-15"
+    ],
+    "unlocks": [],
+    "critical": false,
+    "external": false
+  },
+  "WP-17": {
+    "title": "Gmail MCP — leer y redactar",
+    "status": "skeleton",
+    "tasks_done": 0,
+    "tasks_total": 8,
+    "deps": [
+      "WP-09",
+      "WP-07",
+      "WP-15"
+    ],
+    "unlocks": [],
+    "critical": true,
+    "external": true
+  }
+};
+
+var nodes = document.querySelectorAll('.node');
+var panel = document.getElementById('detail-panel');
+var svg = document.getElementById('edges');
+
+function q(sel) { return document.querySelector(sel); }
+
+function drawEdges() {
+  var old = svg.querySelectorAll('path.edge');
+  for (var i = 0; i < old.length; i++) { old[i].parentNode.removeChild(old[i]); }
+  var wrapRect = document.getElementById('canvas-wrap').getBoundingClientRect();
+  var ids = Object.keys(GRAPH);
+  for (var a = 0; a < ids.length; a++) {
+    var id = ids[a];
+    var info = GRAPH[id];
+    var targetEl = q('.node[data-id="' + id + '"]');
+    if (!targetEl) continue;
+    var t = targetEl.getBoundingClientRect();
+    var tx = t.left + t.width / 2 - wrapRect.left;
+    var ty = t.top - wrapRect.top;
+    for (var b = 0; b < info.deps.length; b++) {
+      var depId = info.deps[b];
+      var depInfo = GRAPH[depId];
+      var sourceEl = q('.node[data-id="' + depId + '"]');
+      if (!sourceEl || !depInfo) continue;
+      var s = sourceEl.getBoundingClientRect();
+      var sx = s.left + s.width / 2 - wrapRect.left;
+      var sy = s.bottom - wrapRect.top;
+      var midY = sy + (ty - sy) / 2;
+      var bothCritical = info.critical && depInfo.critical;
+      var isExternal = info.external;
+      var stroke = bothCritical ? '#ff9d42' : '#3d5a9e';
+      var marker = bothCritical ? 'url(#arrow-amber)' : 'url(#arrow-blue)';
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('class', 'edge');
+      path.setAttribute('d', 'M ' + sx + ' ' + sy + ' C ' + sx + ' ' + midY + ', ' + tx + ' ' + midY + ', ' + tx + ' ' + (ty - 4));
+      path.setAttribute('stroke', stroke);
+      path.setAttribute('stroke-width', bothCritical ? '2' : '1.4');
+      path.setAttribute('fill', 'none');
+      path.setAttribute('marker-end', marker);
+      path.setAttribute('opacity', '0.85');
+      if (isExternal) path.setAttribute('stroke-dasharray', '4 4');
+      svg.appendChild(path);
+    }
+  }
+}
+
+window.addEventListener('load', drawEdges);
+window.addEventListener('resize', drawEdges);
+
+function clearSelection() {
+  for (var i = 0; i < nodes.length; i++) {
+    nodes[i].classList.remove('dim-out', 'highlight-pred', 'highlight-succ');
+  }
+  panel.style.display = 'none';
+}
+
+document.getElementById('clear-btn').addEventListener('click', clearSelection);
+
+for (var k = 0; k < nodes.length; k++) {
+  nodes[k].addEventListener('click', function () {
+    var id = this.dataset.id;
+    var info = GRAPH[id];
+    clearSelection();
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].dataset.id !== id) nodes[i].classList.add('dim-out');
+    }
+    for (var i2 = 0; i2 < info.deps.length; i2++) {
+      var el = q('.node[data-id="' + info.deps[i2] + '"]');
+      if (el) { el.classList.remove('dim-out'); el.classList.add('highlight-pred'); }
+    }
+    for (var i3 = 0; i3 < info.unlocks.length; i3++) {
+      var el2 = q('.node[data-id="' + info.unlocks[i3] + '"]');
+      if (el2) { el2.classList.remove('dim-out'); el2.classList.add('highlight-succ'); }
+    }
+    panel.innerHTML =
+      '<h3>' + id + ' — ' + info.title + '</h3>' +
+      '<div class="row"><b>Estado:</b> ' + info.status + ' (' + info.tasks_done + '/' + info.tasks_total + ')</div>' +
+      '<div class="row"><b>Prerequisitos:</b> ' + (info.deps.length ? info.deps.join(', ') : 'ninguno (raíz)') + '</div>' +
+      '<div class="row"><b>Desbloquea:</b> ' + (info.unlocks.length ? info.unlocks.join(', ') : 'nada (hoja)') + '</div>' +
+      '<div class="row"><b>Camino crítico:</b> ' + (info.critical ? 'sí' : 'no') + '</div>';
+    panel.style.display = 'block';
+  });
+}
+</script>
+</body>
+</html>

@@ -2,23 +2,23 @@
 
 # 🤖 Agente de Planificación Personal
 
-### Agente conversacional por Telegram · Notion + Google Calendar + Gmail vía MCP · PostgreSQL como memoria persistente
+### Chat web (Next.js) · Notion + Google Calendar + Gmail vía MCP · Supabase como memoria persistente
 
 <br>
 
-![Estado](https://img.shields.io/badge/Estado-Draft%20v0.2-EF6C00?style=for-the-badge&logo=git&logoColor=white)
+![Estado](https://img.shields.io/badge/Estado-Draft%20v0.4-EF6C00?style=for-the-badge&logo=git&logoColor=white)
 ![Naturaleza](https://img.shields.io/badge/Naturaleza-Foto%20de%20intención-6A1B9A?style=for-the-badge&logo=notion&logoColor=white)
 ![Proyecto](https://img.shields.io/badge/Proyecto-Independiente-0A66C2?style=for-the-badge&logo=github&logoColor=white)
 
 <br>
 
 ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white)
-![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Next.js](https://img.shields.io/badge/-Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![Vercel](https://img.shields.io/badge/-Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 ![n8n](https://img.shields.io/badge/-n8n-EA4B71?style=flat-square&logo=n8n&logoColor=white)
 ![MCP](https://img.shields.io/badge/-MCP-5A32A3?style=flat-square&logo=anthropic&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)
-![Telegram](https://img.shields.io/badge/-Telegram-26A5E4?style=flat-square&logo=telegram&logoColor=white)
+![Supabase](https://img.shields.io/badge/-Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)
 ![Notion](https://img.shields.io/badge/-Notion-000000?style=flat-square&logo=notion&logoColor=white)
 ![Gmail](https://img.shields.io/badge/-Gmail-EA4335?style=flat-square&logo=gmail&logoColor=white)
 
@@ -27,6 +27,8 @@
 <br>
 
 > **Naturaleza de este documento:** punto de partida. Se refina más adelante con Claude Code y con skills/plugins propios — esto es la foto de intención, no la especificación final. Repo propio, fuera de `ml-agents-data`. Coincide en gran parte con lo que el plan de estudios llama P2 (agente autónomo con herramientas), pero **no está atado a sus plazos ni a sus criterios de evaluación** — reclamar el solape es una decisión aparte, no una obligación de este documento.
+>
+> **v0.4:** pivote de interfaz — Telegram sale, entra un frontend web propio (Next.js en Vercel). El núcleo Python se mantiene como proceso persistente en un host aparte. Postgres pasa de Docker local a Supabase gestionado. Vuelve a ser una app de un solo usuario (no open-source instalable por terceros, por ahora). Detalle completo en [§13](#13-historial-de-decisiones).
 
 ---
 
@@ -51,22 +53,27 @@
 
 ## 1. Qué es
 
-Un agente conversacional, accesible por Telegram, que gestiona planificación personal (tareas, notas, eventos, correo) leyendo y escribiendo en Notion, Google Calendar y Gmail, con PostgreSQL como memoria persistente de todo lo que hace y decide.
+Un agente conversacional, accesible desde un chat web propio, que gestiona planificación personal (tareas, notas, eventos, correo) leyendo y escribiendo en Notion, Google Calendar y Gmail, con Supabase (PostgreSQL) como memoria persistente de todo lo que hace y decide.
 
 ---
 
 ## 2. Stack confirmado
 
+> **Cambio v0.3 → v0.4:** se sustituye Telegram por un frontend web propio, desplegado en Vercel, con Supabase como Postgres gestionado. Ver [§13](#13-historial-de-decisiones) para el porqué de cada cambio.
+
 | Pieza | Rol |
 |:---|:---|
-| **Python** | Núcleo del agente: lógica de decisión, cliente MCP, glue code |
-| **JavaScript** | Nodos Code de n8n; más adelante, un dashboard si hace falta visualizar algo |
-| **JSON** | Formato de intercambio entre todas las capas (payloads, definiciones de herramientas, export de workflows) |
-| **n8n** | Orquestación: recibe el evento de Telegram, dispara el flujo |
-| **PostgreSQL** | Persistencia: conversaciones, llamadas a herramientas, tareas, evaluación |
-| **Docker** | Levanta n8n y Postgres en local, reproducible |
-| **Telegram** | Interfaz de usuario |
+| **Next.js / TypeScript** | Frontend: interfaz de chat web, único punto de entrada del usuario |
+| **Vercel** | Hosting y deploy del frontend Next.js |
+| **Python** | Núcleo del agente: LLM con function calling, cliente MCP, glue code — proceso persistente, alojado fuera de Vercel (ver §3) |
+| **JavaScript** | Nodos Code de n8n |
+| **JSON** | Formato de intercambio entre capas (payloads, definiciones de herramientas, export de workflows) |
+| **n8n** | Automatizaciones secundarias (recordatorios proactivos, sync programado) — ya no está en el camino principal de la conversación, ver §4 |
+| **Supabase (PostgreSQL)** | Persistencia: conversaciones, llamadas a herramientas, tareas, evaluación — Postgres gestionado, sin Docker en producción |
+| **Docker** | Solo para desarrollo local del núcleo Python + n8n; Supabase sustituye al Postgres en Docker |
 | **Notion, Google Calendar, Gmail** | Herramientas externas, todas accedidas vía **MCP** |
+
+**Un solo usuario.** Esta instancia es una app personal, no multi-tenant. No hay Supabase Auth ni login — se asume que quien despliega es quien la usa. La tabla `usuarios` se simplifica a una única fila sembrada al instalar (ver §5).
 
 ---
 
@@ -76,7 +83,7 @@ Notion, Calendar y Gmail se acceden vía **MCP** en vez de vía los nodos nativo
 
 **Qué es MCP aquí:** protocolo estándar por el que un cliente (el agente) pregunta a un servidor MCP qué herramientas ofrece y las invoca de forma uniforme, en vez de que cada integración tenga su propio SDK y su propia autenticación. Mismo concepto que usan Claude Desktop o Claude Code para hablar con Notion, Google Drive, etc.
 
-**Consecuencia arquitectónica:** un cliente MCP necesita vivir en algún sitio que hable el protocolo. n8n no tiene soporte nativo maduro de MCP a día de hoy. Esto significa que **el núcleo Python deja de ser una reescritura futura y pasa a ser necesario desde el principio** — no "lo que ya funciona en n8n, reescrito después", sino la pieza que habla MCP con Notion/Calendar/Gmail desde el día uno. n8n queda con un papel más pequeño: recibir el mensaje de Telegram y llamar al núcleo Python.
+**Consecuencia arquitectónica:** un cliente MCP necesita vivir en algún sitio que hable el protocolo y que mantenga conexiones persistentes con cada servidor — algo que no encaja con funciones serverless (arrancan y mueren por petición). Por eso el núcleo Python **no vive en Vercel**: Vercel aloja solo el frontend Next.js; el núcleo corre como proceso persistente en un host aparte (por defecto, Railway — cambiable). n8n no tiene soporte nativo maduro de MCP a día de hoy, así que tampoco es candidato a alojar el cliente MCP.
 
 ---
 
@@ -84,16 +91,12 @@ Notion, Calendar y Gmail se acceden vía **MCP** en vez de vía los nodos nativo
 
 ```mermaid
 flowchart TB
-    subgraph Interfaz
-        TG[Telegram Bot]
+    subgraph Interfaz["Interfaz · Next.js en Vercel"]
+        FE[Chat web]
     end
 
-    subgraph Orquestacion["Orquestación · n8n"]
-        WH[Webhook trigger]
-        HTTP["HTTP Request<br/>al núcleo Python"]
-    end
-
-    subgraph Nucleo["Núcleo del agente · Python"]
+    subgraph Nucleo["Núcleo del agente · Python (host persistente, p.ej. Railway)"]
+        API[API HTTP]
         LLM["LLM con function calling"]
         MCPC[Cliente MCP]
     end
@@ -104,13 +107,16 @@ flowchart TB
         MCPG[MCP · Gmail]
     end
 
-    subgraph Persistencia["Persistencia · PostgreSQL"]
+    subgraph Persistencia["Persistencia · Supabase (PostgreSQL)"]
         DB[(postgres)]
     end
 
-    TG -->|mensaje| WH
-    WH --> HTTP
-    HTTP --> LLM
+    subgraph Automatizacion["Automatización secundaria · n8n"]
+        CRON[Triggers programados]
+    end
+
+    FE -->|HTTPS| API
+    API --> LLM
     LLM --> MCPC
     MCPC --> MCPN
     MCPC --> MCPCA
@@ -118,32 +124,33 @@ flowchart TB
     LLM --> DB
     MCPC --> DB
     DB -->|historial de contexto| LLM
-    HTTP -->|respuesta| WH
-    WH -->|respuesta| TG
+    API -->|respuesta| FE
+    CRON -.->|dispara, no en el camino de chat| API
 
-    style TG fill:#26A5E4,color:#fff
-    style DB fill:#4169E1,color:#fff
+    style FE fill:#000,color:#fff
+    style DB fill:#3ECF8E,color:#fff
     style MCPC fill:#5A32A3,color:#fff
 ```
 
 | Capa | Rol |
 |:---|:---|
-| **Interfaz** | Telegram como único punto de entrada. |
-| **Orquestación (n8n)** | Recibe el webhook de Telegram, hace un `HTTP Request` al núcleo Python y devuelve la respuesta. Sin lógica de decisión propia. |
-| **Núcleo (Python)** | LLM con function calling + cliente MCP. Es donde vive toda la inteligencia del sistema. |
+| **Interfaz (Next.js/Vercel)** | Chat web como único punto de entrada. Llama directamente a la API del núcleo por HTTPS — sin intermediario. |
+| **Núcleo (Python)** | LLM con function calling + cliente MCP. Proceso persistente en un host aparte de Vercel (por defecto Railway). Es donde vive toda la inteligencia del sistema. |
 | **Servidores MCP** | Notion, Calendar y Gmail, cada uno como servidor MCP independiente. |
-| **Persistencia** | Postgres registra cada interacción antes de responder: qué se dijo, qué herramienta se llamó, con qué argumentos, qué devolvió, si tuvo éxito. |
+| **Persistencia (Supabase)** | Postgres gestionado. Registra cada interacción antes de responder: qué se dijo, qué herramienta se llamó, con qué argumentos, qué devolvió, si tuvo éxito. |
+| **Automatización (n8n)** | Fuera del camino de la conversación. Dispara acciones programadas (p. ej. Fase 1.5, recordatorios) llamando a la API del núcleo o a Supabase directamente. |
 
 ---
 
-## 5. Modelo de datos (PostgreSQL)
+## 5. Modelo de datos (PostgreSQL, en Supabase)
 
 `llamadas_herramienta` registra explícitamente qué servidor MCP resolvió cada llamada — con tres servidores distintos, saber cuál falla o tarda importa. `conversaciones` ya no gestiona cierre de sesión (ver [§10](#10-memoria-de-conversación)).
+
+> App de un solo usuario (§2): `usuarios` se simplifica a una única fila sembrada al instalar, sin `telegram_id` ni credenciales — no hay Supabase Auth. Se mantiene como tabla (en vez de eliminarla) para no tener que tocar las foreign keys de `tareas`, `perfil`, etc. si algún día se añade multi-usuario.
 
 ```sql
 CREATE TABLE usuarios (
     id            SERIAL PRIMARY KEY,
-    telegram_id   BIGINT UNIQUE NOT NULL,
     nombre        TEXT NOT NULL,
     creado_en     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -289,14 +296,14 @@ Al instalar, un script de siembra (`seed.sql`) inserta valores por defecto en `t
 ```
 agente-planificador/
 ├── README.md
-├── docker-compose.yml            # postgres + n8n en local
+├── docker-compose.yml            # n8n en local (Postgres vive en Supabase, no aquí)
 ├── db/
-│   ├── schema.sql
+│   ├── schema.sql                # aplicado contra el Postgres de Supabase
 │   └── seed.sql                  # valores por defecto de taxonomia
 ├── n8n/
-│   └── workflow-agente.json
-├── nucleo/                       # el agente Python, cliente MCP
-│   ├── agente.py
+│   └── workflow-agente.json      # automatizaciones secundarias, no el camino de chat
+├── nucleo/                       # el agente Python, cliente MCP — proceso persistente
+│   ├── agente.py                 # expone la API HTTP que llama el frontend
 │   ├── onboarding.py
 │   ├── herramientas/
 │   │   ├── notion_mcp.py
@@ -304,13 +311,13 @@ agente-planificador/
 │   │   └── gmail_mcp.py
 │   └── evaluacion/
 │       └── casos.py
+├── web/                          # frontend Next.js/TypeScript, desplegado en Vercel
+│   ├── app/
+│   └── package.json
 ├── docs/
 │   ├── DISENO.md
-│   ├── instalacion/
-│   │   ├── localhost-docker.md
-│   │   ├── vps.md
-│   │   ├── dispositivo-propio.md
-│   │   └── n8n-cloud.md
+│   ├── prds/                     # Work Packages (skill prd-blueprint)
+│   ├── instalacion/               # un único camino de despliegue (Vercel + Railway + Supabase), no cuatro (ver §9)
 │   └── decisiones/
 └── .env.example
 ```
@@ -347,17 +354,16 @@ Meter la taxonomía en el onboarding convertiría la primera conversación en un
 
 ## 9. Instalación: cuatro caminos documentados
 
-No se elige uno — se documentan los cuatro, cada uno probado literalmente antes de publicarse:
+> **Cambio v0.3 → v0.4:** con el pivote a app personal de un solo usuario (§2), esta sección deja de ser "cuatro caminos de instalación para desconocidos" y pasa a ser un único despliegue propio:
 
-```
-docs/instalacion/
-├── localhost-docker.md
-├── vps.md                    # Hetzner/DigitalOcean como referencia, no exclusivo
-├── dispositivo-propio.md     # Raspberry Pi u otro equipo siempre encendido
-└── n8n-cloud.md              # n8n de pago, sin autogestionar su contenedor
-```
+| Pieza | Dónde vive |
+|:---|:---|
+| Frontend (Next.js) | Vercel |
+| Núcleo (Python) | Host persistente aparte de Vercel — por defecto Railway |
+| Postgres | Supabase (gestionado) |
+| n8n (automatizaciones secundarias) | Docker local, o n8n Cloud si se prefiere no autogestionarlo |
 
-En los tres primeros, n8n corre en Docker junto a Postgres (mismo `docker-compose.yml`). En el cuarto, n8n vive en la nube gestionada y solo Postgres + el núcleo Python corren donde decida el usuario — ese `docker-compose.yml` no incluye el servicio de n8n.
+`docker-compose.yml` en desarrollo local levanta n8n; Supabase se usa tanto en local como en producción (no hace falta un Postgres en Docker aparte). `docs/instalacion/` documenta este único camino de despliegue, no cuatro alternativas — la nota de open source (§12) queda pospuesta mientras el proyecto sea de un solo usuario.
 
 ---
 
@@ -373,7 +379,7 @@ El contexto que se manda al LLM en cada turno es una ventana de los últimos N m
 
 ## 11. Confirmación ante ambigüedad
 
-Cuando el agente detecta que "cámbiale la prioridad" o "borra esa tarea" puede referirse a más de una fila de `tareas`, no actúa. Presenta hasta 3 candidatas y guarda el estado de "esperando que elijas" — el siguiente mensaje de Telegram, por sí solo, no sabe que es la respuesta a esa pregunta.
+Cuando el agente detecta que "cámbiale la prioridad" o "borra esa tarea" puede referirse a más de una fila de `tareas`, no actúa. Presenta hasta 3 candidatas y guarda el estado de "esperando que elijas" — el siguiente mensaje del chat, por sí solo, no sabe que es la respuesta a esa pregunta.
 
 **Flujo:** cada turno, antes de interpretar el mensaje como petición nueva, el agente comprueba si hay una fila en `confirmaciones_pendientes` sin resolver para ese usuario. Si la hay, el mensaje se interpreta como la elección entre los candidatos mostrados. Si no la hay, sigue el flujo normal.
 
@@ -383,12 +389,15 @@ Esto también cubre `editar_tarea` y `eliminar_tarea` — ambas herramientas pas
 
 ## 12. Nota de open source
 
-Antes de publicar el repo como público e instalable por terceros, mínimos no negociables:
+> **Estado v0.4:** pospuesto. Mientras el proyecto sea una app personal de un solo usuario (§2), publicarlo como instalable por terceros no es el objetivo activo. Se deja esta sección como referencia futura, no como trabajo de roadmap actual.
+
+Si algún día se retoma la idea de publicar el repo como público e instalable por terceros, mínimos no negociables:
 
 - `LICENSE` — sugerencia: MIT, default razonable para una utilidad personal sin ambición comercial. Decides tú.
 - `.env.example` con **cero valores reales**, ni siquiera de ejemplo plausible.
 - README con instrucciones de instalación probadas por alguien que no seas tú, siguiéndolas literalmente y sin ayuda.
-- El `enum` de `materia` (§5), hoy sembrado desde onboarding propio, generalizado si se detecta que hace falta leer el esquema real de otro Notion — no es tarea de la Fase 1.
+- El `enum` de `materia` (§5), hoy sembrado desde onboarding propio, generalizado si se detecta que hace falta leer el esquema real de otro Notion.
+- Reintroducir Supabase Auth y aislamiento multi-usuario (RLS), retirados en v0.4 al pasar a app personal — ver §13.
 
 ---
 
@@ -397,8 +406,13 @@ Antes de publicar el repo como público e instalable por terceros, mínimos no n
 | Pregunta | Respuesta | Implicación de diseño |
 |:---|:---|:---|
 | Cliente MCP | Núcleo Python | Sin cambios respecto al diseño de [§3](#3-el-cambio-de-fondo-mcp-como-capa-de-herramientas) |
-| Usuarios | Open source, instalación independiente por persona | No hace falta aislamiento multi-tenant en la BD; sí un README y `.env.example` que funcionen para un desconocido |
 | Features | Basadas en el Second Brain (PARA): Inbox, Weekly Planner, To-Do Universidad, To-Do Proyectos Personales, To-Do del día, Habit Tracker, Finance Tracker, Daily Journal | Demasiado para una v1 — priorizado en [§7](#7-alcance-por-fases) |
+| **(v0.4)** Interfaz | Se sustituye Telegram por un frontend propio en Next.js | Deja de depender de la API de Bot de Telegram; abre la puerta a una UI más rica que texto plano |
+| **(v0.4)** Deploy del frontend | Vercel | Frontend y núcleo se despliegan por separado — Vercel no aloja bien procesos MCP persistentes (ver §3) |
+| **(v0.4)** Núcleo Python | Se mantiene, pero pasa a ser un proceso persistente en un host aparte de Vercel (por defecto Railway) | El frontend le habla por HTTPS directamente; ya no depende de que n8n reenvíe el webhook de Telegram |
+| **(v0.4)** n8n | Se mantiene, pero deja de estar en el camino principal de la conversación | Pasa a un rol de automatizaciones secundarias (recordatorios, sync programado) — no es la Fase 1 |
+| **(v0.4)** Base de datos | Supabase (Postgres gestionado) en vez de Postgres en Docker | Un solo Postgres para local y producción; Docker queda solo para n8n en desarrollo |
+| **(v0.4)** Usuarios | Vuelve a ser app personal de un solo usuario (revierte la visión open-source de v0.2/v0.3, ver §12) | Sin Supabase Auth ni multi-tenancy; `usuarios` se simplifica a una fila sembrada al instalar |
 
 ---
 
@@ -409,16 +423,17 @@ Antes de publicar el repo como público e instalable por terceros, mínimos no n
 git clone https://github.com/<usuario>/agente-planificador.git
 cd agente-planificador
 
-# Levantar PostgreSQL + n8n local
+# Levantar n8n local (Docker) — Postgres ya no está aquí, ver Supabase abajo
 docker compose up -d
 
-# Aplicar esquema y siembra de taxonomía
-psql -h localhost -U postgres -d agente_planificador -f db/schema.sql
-psql -h localhost -U postgres -d agente_planificador -f db/seed.sql
+# Proyecto Supabase: crear uno en supabase.com, aplicar el esquema
+# y la siembra de taxonomía contra su Postgres
+psql "$SUPABASE_DB_URL" -f db/schema.sql
+psql "$SUPABASE_DB_URL" -f db/seed.sql
 
 # Variables de entorno
 cp .env.example .env
-# rellenar TELEGRAM_BOT_TOKEN, LLM_API_KEY,
+# rellenar SUPABASE_DB_URL, LLM_API_KEY,
 # y las credenciales de cada servidor MCP (Notion, Calendar, Gmail)
 
 # Entorno del núcleo Python
@@ -426,10 +441,16 @@ python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Arrancar el núcleo
+# Arrancar el núcleo (proceso persistente, expone la API que llama el frontend)
 python nucleo/agente.py
 
-# Importar el workflow en n8n
+# Frontend Next.js
+cd web
+npm install
+npm run dev          # local
+vercel deploy        # producción
+
+# Importar el workflow de automatizaciones secundarias en n8n (opcional)
 # n8n → Import from File → n8n/workflow-agente.json
 ```
 

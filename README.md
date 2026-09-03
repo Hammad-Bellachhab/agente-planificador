@@ -319,13 +319,14 @@ agente-planificador/
 │   └── evaluacion/
 │       └── casos.py
 ├── web/                          # frontend Next.js/TypeScript, desplegado en Vercel
-│   ├── app/
+│   ├── app/                      # /, /chat, /como-se-usa, /infra, /docs + componentes compartidos
 │   └── package.json
 ├── docs/
-│   ├── DISENO.md
+│   ├── assets/                   # banner.png y demás material visual fuente
 │   ├── prds/                     # Work Packages (skill prd-blueprint)
 │   ├── instalacion/               # un único camino de despliegue (Vercel + Google Cloud Run + Supabase), no cuatro (ver §9)
 │   └── decisiones/
+├── PRODUCT.md                    # contexto de producto para trabajo de diseño en web/ (skill impeccable)
 └── .env.example
 ```
 

@@ -1,12 +1,12 @@
 ---
 id: WP-01
 title: Esquema PostgreSQL
-status: skeleton
+status: done
 size: L
 depends_on: []
 owner: hammad
 external: false
-tasks_done: 0
+tasks_done: 13
 tasks_total: 13
 issue: null
 subtitle: Fase 0
@@ -56,4 +56,6 @@ tablas contra las que escribir y leer.
 
 ## Estado
 
-Esqueleto sin especificar. Ejecutar fase de "fill" antes de construir.
+**Hecho.** `db/schema.sql` relleno con las 12 tablas, aplicado contra Supabase (verificado con
+`\dt`). Las dos correcciones de diseño ya incorporadas: `taxonomia.campo` sin `'estado'`,
+sin `telegram_message_id` (idempotencia por transporte pospuesta, ver README §13).

@@ -1,26 +1,157 @@
 @import "tailwindcss";
 
+/*
+ * Paleta monocromática — negro/blanco/gris, sin acentos de color.
+ * Fuente de verdad: docs/assets/banner.png (carbón oscuro, superficies
+ * grafito, texto blanco roto). Escala neutra pura (R=G=B en cada tono)
+ * para no introducir ninguna tinta accidental.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+
+  --background: #0a0a0a; /* lienzo de la app */
+  --surface: #121212; /* header / composer */
+  --surface-2: #1a1a1a; /* burbuja de usuario */
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --foreground: #ededed; /* texto principal, blanco roto */
+  --muted: #a3a3a3; /* texto secundario */
+  --subtle: #838383; /* texto terciario, placeholders — 4.85:1 sobre --background, cumple el piso de 4.5:1 para texto de cuerpo/placeholder */
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --font-sans: var(--font-montserrat);
   --font-mono: var(--font-geist-mono);
+  --font-serif-display: var(--font-serif-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+}
+
+:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--border-strong);
+  color: var(--foreground);
+}
+
+@keyframes dot-pulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* Momento de entrada del intercambio de ejemplo en la landing — un único
+   gesto autorizado (craft floor: "one authored moment"), no efectos sueltos. */
+@keyframes message-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* La misma indicación de "escribiendo" del chat real, en una ventana de
+   tiempo fija dentro de la secuencia de entrada — reutiliza dot-pulse. */
+@keyframes typing-window {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  18%,
+  62% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+}
+
+/* Quien pide menos movimiento lo tiene: la secuencia de entrada aparece
+   resuelta al instante, sin animación retrasada. */
+@media (prefers-reduced-motion: reduce) {
+  .message-beat,
+  .marquee-track,
+  .site-nav-in {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Aparición de la barra de navegación al montar — solo opacity: el eje Y lo
+   controla el propio componente (mostrar/ocultar según scroll), y animar
+   transform en los dos sitios a la vez pisaría uno al otro. */
+@keyframes nav-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.site-nav-in {
+  animation: nav-in 0.4s ease-out both;
+}
+
+/* Franja deslizante de integraciones — el contenido va duplicado una vez en
+   el JSX y esto recorre exactamente la mitad, así el bucle no da salto. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* Máscara de desvanecido en los bordes de la franja — que los elementos
+   entren/salgan disolviéndose, no cortados en seco. */
+.marquee-fade {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 12%,
+    black 88%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 12%,
+    black 88%,
+    transparent
+  );
 }

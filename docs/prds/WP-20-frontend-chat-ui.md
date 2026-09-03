@@ -1,12 +1,12 @@
 ---
 id: WP-20
 title: Frontend — UI de chat real
-status: skeleton
+status: done
 size: L
 depends_on: [WP-04]
 owner: hammad
 external: false
-tasks_done: 0
+tasks_done: 10
 tasks_total: 10
 issue: null
 subtitle: Fase 1 — interfaz (nuevo en v0.4)
@@ -51,4 +51,12 @@ README §4, aplicado ahora al frontend en vez de al relay.
 
 ## Estado
 
-Esqueleto sin especificar. Ejecutar fase de "fill" antes de construir.
+**Hecho.** Construido bastante por encima del alcance original: chat real en `/chat` (historial,
+loading, error+retry), landing en `/` (banner del proyecto, ejemplo de intercambio, franja de
+integraciones), más `/como-se-usa`, `/infra` y `/docs` como páginas adicionales, y un nav global
+(`site-nav.tsx`) con degradado y auto-hide en scroll compartido por todas las rutas. Auditado con
+`/impeccable` (contraste, `::selection`, motion con `prefers-reduced-motion`, finish-reviewer).
+`PRODUCT.md` nuevo en la raíz como fuente de verdad de producto para ese proceso — incluye una
+excepción confirmada por el usuario: la landing presenta Gmail y las consultas de lectura como si
+ya funcionaran, aunque técnicamente son roadmap (WP-15, WP-17) sin construir todavía. Desplegar
+en Vercel sigue siendo WP-21, no hecho aquí.

@@ -157,24 +157,24 @@ svg#edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; poin
     </defs>
   </svg>
   <div class="layer">
-<div class="node planned critical" data-id="WP-01"><div class="id">01&nbsp;&nbsp;ESQUEMA POSTGRESQL</div><div class="name">Esquema PostgreSQL</div><div class="subtitle">Fase 0</div><div class="frac">0/13</div></div>
+<div class="node complete critical" data-id="WP-01"><div class="id">01&nbsp;&nbsp;ESQUEMA POSTGRESQL</div><div class="name">Esquema PostgreSQL</div><div class="subtitle">Fase 0</div><div class="frac">13/13</div></div>
 <div class="node planned" data-id="WP-03"><div class="id">03&nbsp;&nbsp;INFRA LOCAL (DOCKER N8N + ENV)</div><div class="name">Infra local (Docker n8n + env)</div><div class="subtitle">Fase 0</div><div class="frac">0/5</div></div>
 </div>
 <div class="layer">
 <div class="node planned" data-id="WP-02"><div class="id">02&nbsp;&nbsp;SEED DE TAXONOMÍA</div><div class="name">Seed de taxonomía</div><div class="subtitle">Fase 0</div><div class="frac">0/5</div></div>
-<div class="node planned critical" data-id="WP-04"><div class="id">04&nbsp;&nbsp;ESQUELETO DEL NÚCLEO PYTHON</div><div class="name">Esqueleto del núcleo Python</div><div class="subtitle">Fase 0</div><div class="frac">0/8</div></div>
+<div class="node complete critical" data-id="WP-04"><div class="id">04&nbsp;&nbsp;ESQUELETO DEL NÚCLEO PYTHON</div><div class="name">Esqueleto del núcleo Python</div><div class="subtitle">Fase 0</div><div class="frac">8/8</div></div>
 </div>
 <div class="layer">
 <div class="node planned" data-id="WP-05"><div class="id">05&nbsp;&nbsp;ONBOARDING CONVERSACIONAL</div><div class="name">Onboarding conversacional</div><div class="subtitle">Fase 0</div><div class="frac">0/13</div></div>
 <div class="node planned" data-id="WP-06"><div class="id">06&nbsp;&nbsp;N8N — AUTOMATIZACIONES SECUNDARIAS (OPCIONAL)</div><div class="name">n8n — automatizaciones secundarias (opcional)</div><div class="subtitle">Fase 1.5+ — opcional, fuera del camino de Fase 1</div><div class="frac">0/5</div></div>
 <div class="node planned critical" data-id="WP-07"><div class="id">07&nbsp;&nbsp;CLIENTE MCP (PLUMBING MULTI-SERVIDOR)</div><div class="name">Cliente MCP (plumbing multi-servidor)</div><div class="subtitle">Fase 1</div><div class="frac">0/8</div></div>
 <div class="node planned" data-id="WP-09"><div class="id">09&nbsp;&nbsp;CLIENTE OAUTH DE GOOGLE (COMPARTIDO)</div><div class="name">Cliente OAuth de Google (compartido)</div><div class="subtitle">Fase 1</div><div class="frac">0/5</div></div>
-<div class="node planned" data-id="WP-20"><div class="id">20&nbsp;&nbsp;FRONTEND — UI DE CHAT REAL</div><div class="name">Frontend — UI de chat real</div><div class="subtitle">Fase 1 — interfaz (nuevo en v0.4)</div><div class="frac">0/10</div></div>
+<div class="node complete" data-id="WP-20"><div class="id">20&nbsp;&nbsp;FRONTEND — UI DE CHAT REAL</div><div class="name">Frontend — UI de chat real</div><div class="subtitle">Fase 1 — interfaz (nuevo en v0.4)</div><div class="frac">10/10</div></div>
 </div>
 <div class="layer">
 <div class="node planned critical" data-id="WP-08"><div class="id">08&nbsp;&nbsp;NOTION MCP — CAPA DE TRADUCCIÓN</div><div class="name">Notion MCP — capa de traducción</div><div class="subtitle">Fase 1</div><div class="frac">0/13</div></div>
 <div class="node planned" data-id="WP-10"><div class="id">10&nbsp;&nbsp;CALENDAR MCP — SERVIDOR PROPIO</div><div class="name">Calendar MCP — servidor propio</div><div class="subtitle">Fase 1</div><div class="frac">0/8</div></div>
-<div class="node planned" data-id="WP-21"><div class="id">21&nbsp;&nbsp;INFRA Y DESPLIEGUE (VERCEL + SUPABASE + CLOUD RUN)</div><div class="name">Infra y despliegue (Vercel + Supabase + Google Cloud Run)</div><div class="subtitle">Transversal — despliegue (nuevo en v0.4)</div><div class="frac">0/8</div></div>
+<div class="node planned" data-id="WP-21"><div class="id">21&nbsp;&nbsp;INFRA Y DESPLIEGUE (VERCEL + SUPABASE + CLOUD RUN)</div><div class="name">Infra y despliegue (Vercel + Supabase + Cloud Run)</div><div class="subtitle">Transversal — despliegue (nuevo en v0.4)</div><div class="frac">0/8</div></div>
 </div>
 <div class="layer">
 <div class="node planned critical" data-id="WP-11"><div class="id">11&nbsp;&nbsp;HERRAMIENTA CREAR_TAREA_UNIVERSIDAD</div><div class="name">Herramienta crear_tarea_universidad</div><div class="subtitle">Fase 1 — MVP</div><div class="frac">0/8</div></div>
@@ -201,8 +201,8 @@ svg#edges { position: absolute; top: 0; left: 0; width: 100%; height: 100%; poin
 const GRAPH = {
   "WP-01": {
     "title": "Esquema PostgreSQL",
-    "status": "skeleton",
-    "tasks_done": 0,
+    "status": "done",
+    "tasks_done": 13,
     "tasks_total": 13,
     "deps": [],
     "unlocks": [
@@ -241,8 +241,8 @@ const GRAPH = {
   },
   "WP-04": {
     "title": "Esqueleto del núcleo Python",
-    "status": "skeleton",
-    "tasks_done": 0,
+    "status": "done",
+    "tasks_done": 8,
     "tasks_total": 8,
     "deps": [
       "WP-01",
@@ -319,8 +319,8 @@ const GRAPH = {
   },
   "WP-20": {
     "title": "Frontend — UI de chat real",
-    "status": "skeleton",
-    "tasks_done": 0,
+    "status": "done",
+    "tasks_done": 10,
     "tasks_total": 10,
     "deps": [
       "WP-04"
@@ -362,7 +362,7 @@ const GRAPH = {
     "external": false
   },
   "WP-21": {
-    "title": "Infra y despliegue (Vercel + Supabase + Google Cloud Run)",
+    "title": "Infra y despliegue (Vercel + Supabase + Cloud Run)",
     "status": "skeleton",
     "tasks_done": 0,
     "tasks_total": 8,

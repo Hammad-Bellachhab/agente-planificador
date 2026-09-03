@@ -1,0 +1,109 @@
+SURFACE CONCEPT SEED (key: 664265cd; mode: persuade; source: api; approved pool: c3b204a1eed6; 306/564 human-approved; rerun with --scope surface --mode persuade --from 664265cd --candidate-count 7 to reproduce this roll against this catalog revision)
+ASSIGNED INDEX: 7
+  After ordering the task's grounded structural candidates by resonance,
+  build candidate 7 of your own grounded list; the assignment never
+  points at a challenger. The assignment is the roll, not a suggestion.
+  In an attended run, present the assigned structure and offer re-roll; never
+  present a ranked lineup to choose from. Re-roll yourself only when the
+  assignment fails audience identification or product clarity on named
+  factual grounds.
+  The assignment exists to refuse the model's ranking rut, never to outrank
+  the user or the brief. Never expose assignment metadata in user-facing labels.
+CHALLENGERS:
+  1. a broadcast signal degrading on purpose, colour bars and an alert tone card interrupted by tracking noise, timecode burned into the corner and a warning crawl that keeps repeating with one word changed
+     SOURCE ID: digital-design-canon-emergency-signal-degradation
+     CREATIVE SPARK: colour bars, a tone, and a card that says please stand by, except the timecode in the corner is running backwards and the crawl at the bottom changed one word since the last time you looked at it.
+     SYSTEM GRAMMAR:
+       - Palette/material: broadcast bar primaries over a near-black field, chroma bleeding sideways, tape noise banding across the lower third
+       - Type/composition: a monospaced timecode locked to one corner, centered alert caps on a solid card, and a single-line crawl pinned to the foot
+       - Topology/navigation: the world is a channel, so navigation is tuning between cards, and each card asserts it is the only broadcast left
+       - Controls/state: controls are channel steps, an active one locks signal and clears noise, and an unavailable one drops into rolling static
+       - Responsive/motion: bars and crawl hold their proportion at any width, and motion is a vertical roll with a horizontal tracking tear
+     WEB LEVERAGE: a webgl tracking-tear shader, canvas noise banding, and a live timecode state that drives the crawl
+     QUALITY BAR: board https://impeccable.style/worlds/cards/digital-design-canon-emergency-signal-degradation.webp · hero https://impeccable.style/worlds/cards/digital-design-canon-emergency-signal-degradation-hero.webp
+  2. a Wim Crouwel gridded type specimen, where letterforms are built cell by cell on a visible construction grid and the poster is the proof
+     SOURCE ID: crouwel-grid-specimen
+     CREATIVE SPARK: Faint blue gridlines cover the sheet like graph paper; enormous letterforms assemble themselves from its cells, and one diagonal is the only rebellion the system permits.
+     SYSTEM GRAMMAR:
+       - Palette/material: white or one stark saturated ground, faint construction-grid hairlines, one accent plane earned by the headline
+       - Type/composition: monumental grid-constructed letterforms over small neutral grotesk; the layout grid stays visible as part of the design
+       - Topology/navigation: Move by cell, by letter, and by catalog entry.
+       - Controls/state: Reveal construction, snap to cells, and toggle grid visibility as a real state.
+       - Responsive/motion: The page reflows by whole cells; letterforms rebuild cell by cell when content changes.
+     WEB LEVERAGE: CSS grid as the literal visible armature with display letterforms drawn from the same grid tokens
+     QUALITY BAR: board https://impeccable.style/worlds/cards/crouwel-grid-specimen.webp · hero https://impeccable.style/worlds/cards/crouwel-grid-specimen-hero.webp
+  3. a nixie-tube laboratory counter, where stacked digits glow orange inside glass envelopes and every count arrives as visible plasma
+     SOURCE ID: signals-instruments-nixie-laboratory-counter
+     CREATIVE SPARK: Inside each glass tube ten metal numerals nest; the lit one hovers orange, and a count change is a tiny change of physical depth.
+     SYSTEM GRAMMAR:
+       - Palette/material: neon orange digit glow inside clear glass envelopes, blackened steel chassis as ground, hairline anode mesh gray; the lit digit is the only warm accent
+       - Type/composition: stacked metal numerals of one engineered digit form, each tube a fixed decimal place; labels sit as engraved caps on the panel below the banks
+       - Topology/navigation: quantities are the interface; each metric owns a tube bank with fixed digit positions.
+       - Controls/state: value changes cross-fade between physical digit layers; overflow and reset are visible mechanical events.
+       - Responsive/motion: banks drop to essential digits on phones; digit transitions are single cross-fades under
+     WEB LEVERAGE: Layered DOM digits with depth-true cross-fades render tube physics in pure CSS.
+     QUALITY BAR: board https://impeccable.style/worlds/cards/signals-instruments-nixie-laboratory-counter.webp · hero https://impeccable.style/worlds/cards/signals-instruments-nixie-laboratory-counter-hero.webp
+  4. a bath of thickened water where pigment floats and is combed into figures before being lifted onto paper in one contact, every mark made by moving liquid rather than by drawing on a surface
+     SOURCE ID: medium-native-ebru-floated-pigment
+     CREATIVE SPARK: Every drop pushes the last one into a ring, and you comb through the whole thing with a single hair before laying a sheet down once and lifting the only copy there will ever be.
+     SYSTEM GRAMMAR:
+       - Palette/material: pigment floating on a thickened bath, colours never mixing but displacing each other, lifted onto sized paper in a single contact
+       - Type/composition: figures drawn by dragging a stylus through floating colour, with each new drop pushing the previous ones outward into rings
+       - Topology/navigation: everything is made on one surface in one pass, so navigation is intervening in a liquid rather than moving between views
+       - Controls/state: controls are stylus strokes, each one permanently displaces the colour around it, and a lift ends the composition
+       - Responsive/motion: the bath fills any frame and figures redistribute, and motion is pigment displacing outward from each new drop
+     WEB LEVERAGE: a fluid-displacement canvas simulation with stylus interaction, irreversible stroke state, and a one-shot lift transition
+     QUALITY BAR: board https://impeccable.style/worlds/cards/medium-native-ebru-floated-pigment.webp · hero https://impeccable.style/worlds/cards/medium-native-ebru-floated-pigment-hero.webp
+  5. a single square of vermilion washi becoming an orizuru crane through thirty-two deliberate folds, where one uncut sheet passes from flat geometry to beak, wings, hollow body, and a balanced standing silhouette
+     SOURCE ID: paper-folds-pleats-deployable-orizuru-crane-sequence
+     CREATIVE SPARK: The red square closes into a small diamond, opens into a long-necked bird, and with one final pull spreads two crisp wings that still carry every earlier crease.
+     SYSTEM GRAMMAR:
+       - Palette/material: vermilion washi as ground with visible kozo fiber, crease lines in faded fold-white, one gold dot marking the active step, notes in sumi black ink
+       - Type/composition: quiet humanist sans beside kanji step names, folds numbered one to thirty-two in a strict margin column, diagrams square and centered like the uncut sheet
+       - Topology/navigation: Connect face, edge, mountain crease, valley crease, preliminary base, bird base, flap, and finished crane as one continuous sheet.
+       - Controls/state: Fold, unfold, rotate, reverse, and replay with flat, creased, collapsed, based, locked, finished, and recoverable states.
+       - Responsive/motion: Pair the active crease pattern with one authored spatial view and provide discrete fold states under
+     WEB LEVERAGE: Constraint-aware direct manipulation can prevent impossible folds, synchronize the crease pattern with the spatial crane, and deep-link any recoverable step for teaching or return.
+     QUALITY BAR: board https://impeccable.style/worlds/cards/paper-folds-pleats-deployable-orizuru-crane-sequence.webp · hero https://impeccable.style/worlds/cards/paper-folds-pleats-deployable-orizuru-crane-sequence-hero.webp
+  6. an alphabet storm, where letters condense into words, break into weather, and reshape the landscape according to grammar
+     SOURCE ID: dream-surreal-impossible-worlds-alphabet-storm
+     CREATIVE SPARK: Black letters gather into CLOUD, burst into rain, and carve the word RIVER across white ground; changing one vowel turns the current into a field of silver ravens.
+     SYSTEM GRAMMAR:
+       - Palette/material: paper white ground, storm-letter black as both body ink and weather mass, one silver flash for words mid-transformation, rain gray for spent grammar
+       - Type/composition: a single monumental grotesk behaving as matter, kerning loosening into wind, words breaking across lines as literal weather fronts on an open field
+       - Topology/navigation: Travel between letter fronts, word formations, grammatical forces, and the landscapes they produce.
+       - Controls/state: Type, split, conjugate, and recombine language while physical consequences remain reversible.
+       - Responsive/motion: Use one word-weather event per phone viewport and preserve readable text throughout transformation.
+     WEB LEVERAGE: Text parsing, procedural particles, and semantic rules turn typed language into deterministic weather with accessible narrative descriptions.
+     QUALITY BAR: board https://impeccable.style/worlds/cards/dream-surreal-impossible-worlds-alphabet-storm.webp · hero https://impeccable.style/worlds/cards/dream-surreal-impossible-worlds-alphabet-storm-hero.webp
+A challenger wins only when its fused result beats the grounded list on
+  audience identification and product clarity. It may change task topology or
+  interaction, but never the committed visual identity.
+When you can view images, open the QUALITY BAR board and hero for any
+challenger you weigh seriously and for the world you build. They exist as a
+craft bar, the finish level and commitment the build is expected to reach,
+never as a mockup to copy; your surface serves this product, not that render.
+PRODUCT.md and DESIGN.md constrain every surface candidate's identity
+vocabulary; they do not cancel task-level composition. The seed never
+authorizes a new palette, type system, material world, or unfamiliar control
+behavior.
+The CREATIVE SPARK is a complete visual system, not a theme or decorative
+reference. Translate every supplied system rule into the product: palette and
+material, type and composition, topology, controls and states, and adaptation.
+Keep the source's visible character, scale, rhythm, and interaction instead of
+reducing vivid grammar to generic nouns. When the source is already a credible
+interface language, commit to it across navigation, content, controls, and
+states. Otherwise keep a literal carrier only when it becomes functional.
+Ambitious motion, spatial media, or interaction is welcome when it strengthens
+the product without weakening semantics, performance, or fallback behavior.
+TELEMETRY: after the user's choice resolves, rerun this script once with
+  --kind <assigned|pick|challenger|canon> --from 664265cd --scope surface --mode persuade,
+  adding --chosen <challenger-id> when a dealt challenger won and keeping
+  --register <safer|bolder> when the resolved round came from a steered hand.
+  One ping per resolved attended round. The ping is anonymous, the card kind
+  plus the catalog id when one won; your grounded candidates' names never
+  leave the machine, and the ping is skipped automatically when DO_NOT_TRACK
+  or IMPECCABLE_NO_TELEMETRY is set.
+A user- or brief-pinned decision beats the roll, always.
+ASSIGNED INDEX (restated for truncated readers): 7. Build candidate
+7 of your own grounded list; seed key 664265cd.

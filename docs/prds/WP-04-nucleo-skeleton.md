@@ -1,12 +1,12 @@
 ---
 id: WP-04
 title: Esqueleto del núcleo Python
-status: skeleton
+status: done
 size: M
 depends_on: [WP-01, WP-03]
 owner: hammad
 external: false
-tasks_done: 0
+tasks_done: 8
 tasks_total: 8
 issue: null
 subtitle: Fase 0
@@ -52,4 +52,7 @@ Postgres y el resto de credenciales que va a leer desde `.env`.
 
 ## Estado
 
-Esqueleto sin especificar. Ejecutar fase de "fill" antes de construir.
+**Hecho.** `nucleo/agente.py` expone `/health` y `POST /mensaje` sobre FastAPI, conecta a
+Supabase, registra mensajes. Probado end-to-end: servidor arrancado en local, request real
+verificado en la tabla `mensajes`. `requirements.txt`, `herramientas/__init__.py` y
+`evaluacion/__init__.py` creados. CORS y despliegue en Cloud Run siguen siendo WP-21.

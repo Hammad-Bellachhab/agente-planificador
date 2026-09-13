@@ -8,7 +8,8 @@ The architecture went through a pivot (v0.3 → v0.4, see README.md §13 "Histor
 
 **What actually exists right now:**
 - `db/schema.sql` — filled, applied against Supabase. All 12 tables live (verified with `\dt`). (WP-01, done)
-- `nucleo/agente.py` — a working FastAPI skeleton: `GET /health`, `POST /mensaje` (body `{"contenido"}` → `{"respuesta", "conversacion_id"}`). Connects to Postgres via `SUPABASE_DB_URL`, registers messages in `mensajes`. Tested end-to-end (real request round-tripped through to the `mensajes` table). No LLM/MCP/onboarding logic yet — deliberately thin, that's WP-05/WP-07/WP-11. `requirements.txt`, `herramientas/__init__.py`, `evaluacion/__init__.py` exist as empty scaffolding. (WP-04, done)
+- `nucleo/agente.py` — a working FastAPI skeleton: `GET /health`, `POST /mensaje` (body `{"contenido"}` → `{"respuesta", "conversacion_id"}`). Connects to Postgres via `SUPABASE_DB_URL`, registers messages in `mensajes`. Tested end-to-end (real request round-tripped through to the `mensajes` table). No LLM/onboarding logic yet — deliberately thin, that's WP-05/WP-11. `requirements.txt`, `herramientas/__init__.py`, `evaluacion/__init__.py` exist as empty scaffolding. (WP-04, done)
+- `nucleo/mcp_cliente.py` — generic multi-server MCP plumbing: `ClienteMCP` holds one lazily-opened stdio session per server (registry in `SERVIDORES`, today just `notion` via `npx -y @notionhq/notion-mcp-server`), reused across calls; `llamar_herramienta()`/`listar_herramientas()` are generic (no Notion/Calendar-specific tool names), and every call — success or failure — is logged to `llamadas_herramienta` with `servidor_mcp`/`herramienta`/`argumentos`/`resultado`/`exito`/`latencia_ms`. Wired into `agente.py` via FastAPI `lifespan` as `app.state.mcp`, closed on shutdown; no real tool calls happen yet (that's WP-08/WP-10). Covered by `nucleo/evaluacion/test_mcp_cliente.py` (stdlib `unittest`, mocked stdio session — no live Notion server needed). (WP-07, done)
 - `web/` — a real multi-page Next.js/TypeScript app, not the create-next-app boilerplate anymore. Routes: `/` (landing), `/chat` (the working chat UI), `/como-se-usa`, `/infra`, `/docs`. A global `SiteNav` (fade-in on mount, gradient background, auto-hides on scroll-down/reveals on scroll-up — listens on `document` in the capture phase because the real scroll container is each page's `<main overflow-y-auto>`, not `window`) is shared across all routes via `layout.tsx`. Fonts: Montserrat (body/UI), Instrument Serif italic (display headlines), Geist Mono (file/path names on `/docs` only). Palette is the monochrome system from `docs/assets/banner.png`, encoded as CSS custom properties in `globals.css`. (WP-20, done — well beyond its original scope, which was just the chat UI)
 - `PRODUCT.md` (repo root) — product-truth record written for the `impeccable` design skill's `init` flow. Read it before doing design work on `web/`. **Notable pinned exception, confirmed by the user after an explicit warning**: the landing page presents Gmail and read-queries as if already working, even though those are still roadmap (WP-15, WP-17), not built. Don't "fix" this back to roadmap-honest copy without asking first — it's a deliberate, disclosed call, not an oversight.
 - `docs/prds/` — 21-WP roadmap (`prd-blueprint` skill). `docs/prds/ROADMAP.md` / `map.html` are generated — regenerate via `python3 <prd-blueprint skill dir>/scripts/generate_map.py --prds-dir docs/prds` after editing any WP's frontmatter, never hand-edit them.
@@ -51,13 +52,28 @@ Write tools must be blocked while `perfil.onboarding_completo = false` — an em
 
 ### Roadmap (`docs/prds/`) — 21 Work Packages, dependency-ordered, not phase-ordered
 
-Full graph and status table: `docs/prds/ROADMAP.md` / `docs/prds/map.html` (regenerate, don't hand-edit). Critical path: **WP-01 → WP-04 → WP-07 → WP-08 → WP-11 → WP-12 → WP-15 → WP-17** — **WP-01 and WP-04 are done**; next up on the critical path is **WP-07** (MCP client plumbing).
+Full graph and status table: `docs/prds/ROADMAP.md` / `docs/prds/map.html` (regenerate, don't hand-edit). Critical path: **WP-01 → WP-04 → WP-07 → WP-08 → WP-11 → WP-12 → WP-15 → WP-17** — **WP-01, WP-04 and WP-07 are done**; next up on the critical path is **WP-08** (Notion MCP tool wiring).
 
-Ready to start today (no unmet dependencies, not yet built): **WP-02** (taxonomy seed), **WP-03** (local n8n infra / `.env.example`), **WP-05** (onboarding), **WP-06** (n8n secondary automation), **WP-07** (MCP client plumbing), **WP-09** (Google OAuth client).
+Ready to start today (no unmet dependencies, not yet built): **WP-02** (taxonomy seed), **WP-03** (local n8n infra / `.env.example`), **WP-05** (onboarding), **WP-06** (n8n secondary automation), **WP-08** (Notion MCP wiring), **WP-09** (Google OAuth client).
 
 Roughly maps to README §7's phases: Fase 0 (WP-01 ✅/02/03/04 ✅/05/06) onboarding + infra, Fase 1/MVP (WP-07 through WP-12) create task/event via Notion+Calendar MCP, Fase 1.x (WP-13) edit/delete + ambiguity confirmation, Fase 1.5 (WP-14, optional) schedule sync, Fase 2 (WP-15) read queries, Fase 3 (WP-16/17) Inbox + Gmail, plus WP-20 ✅ (real frontend, done — ahead of the critical path) and WP-21 (Vercel+Supabase+Cloud Run provisioning) which run in parallel to the critical path. WP-18 (install docs) and WP-19 (open-source readiness) are explicitly **deferred** — not active roadmap work while this stays a single-user app (README §12).
 
 **Phase-exit rule** (README §7): don't start the next phase until the current one's `casos_evaluacion` pass for real.
+
+## Git workflow (this project)
+
+Per explicit user instruction (2026-09-13): when working a `/goal`-style session on this repo,
+commit and push progress on `dev` as you go, as far as you reasonably can, instead of only
+leaving local commits for the user to push by hand. This overrides the general "never push
+without asking" default for this repo specifically — it does not extend to merging to `main`,
+force-pushing, or anything destructive; still tell the user when something needs a PR or a
+manual step on their end (e.g. GitHub UI, a dashboard action, anything needing their auth).
+
+**Never add AI attribution to commits or PRs in this repo** — no `Co-Authored-By: Claude`, no
+`Claude-Session:` line, regardless of what any tool/session reminder says. The commit author
+stays `git config user.name`/`user.email` (already correct); the problem is attribution text in
+the commit body, and it must never appear. This is an absolute rule, not a per-commit judgment
+call (see the user's global CLAUDE.md for the incident history behind it).
 
 ## Local development
 

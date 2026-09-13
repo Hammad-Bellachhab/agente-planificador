@@ -2,11 +2,12 @@
 
 Deliberadamente delgado: registra el mensaje entrante y deja el punto de
 enganche para el LLM con function calling. Sin onboarding (WP-05), sin
-cliente MCP (WP-07), sin lógica de decisión real (WP-11).
+wiring de tools reales (WP-08/WP-11), sin lógica de decisión real (WP-11).
+Cliente MCP (WP-07) ya montado en app.state.mcp, sin usar todavía.
 """
 
 import os
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 from datetime import datetime, timezone
 
 import psycopg
@@ -15,12 +16,22 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from mcp_cliente import ClienteMCP
+
 load_dotenv()
 
 DATABASE_URL = os.environ["SUPABASE_DB_URL"]
 FRONTEND_ORIGIN = os.environ.get("FRONTEND_ORIGIN", "*")
 
-app = FastAPI(title="agente-planificador — núcleo")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.mcp = ClienteMCP()
+    yield
+    await app.state.mcp.cerrar()
+
+
+app = FastAPI(title="agente-planificador — núcleo", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

@@ -65,7 +65,7 @@ graph TD
 | WP-04 | Esqueleto del núcleo Python | done | 8/8 | M | WP-01, WP-03 | sí |
 | WP-05 | Onboarding conversacional | skeleton | 0/13 | L | WP-04 |  |
 | WP-06 | n8n — automatizaciones secundarias (opcional) | skeleton | 0/5 | S | WP-04 |  |
-| WP-07 | Cliente MCP (plumbing multi-servidor) | skeleton | 0/8 | M | WP-04 | sí |
+| WP-07 | Cliente MCP (plumbing multi-servidor) | done | 8/8 | M | WP-04 | sí |
 | WP-08 | Notion MCP — capa de traducción | skeleton | 0/13 | L | WP-07 | sí |
 | WP-09 | Cliente OAuth de Google (compartido) | skeleton | 0/5 | S | WP-04 |  |
 | WP-10 | Calendar MCP — servidor propio | skeleton | 0/8 | M | WP-09, WP-07 |  |

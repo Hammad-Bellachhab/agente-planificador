@@ -1,12 +1,12 @@
 ---
 id: WP-07
 title: Cliente MCP (plumbing multi-servidor)
-status: skeleton
+status: done
 size: M
 depends_on: [WP-04]
 owner: hammad
 external: false
-tasks_done: 0
+tasks_done: 8
 tasks_total: 8
 issue: null
 subtitle: Fase 1
@@ -44,4 +44,15 @@ subprocesos stdio, y la conexión a Postgres ya establecida para escribir en
 
 ## Estado
 
-Esqueleto sin especificar. Ejecutar fase de "fill" antes de construir.
+**Hecho.** `nucleo/mcp_cliente.py`: `ClienteMCP` con registro `SERVIDORES` (nombre → comando
+stdio; hoy solo `notion`, vía `npx -y @notionhq/notion-mcp-server`), sesión por servidor abierta
+perezosamente en el primer uso y reutilizada mientras el proceso viva (evita relanzar el
+subproceso en cada llamada; se reconecta solo tras un cold start real de Cloud Run — WP-21),
+`listar_herramientas()`/`llamar_herramienta()` genéricos, y logging de cada llamada en
+`llamadas_herramienta` (servidor_mcp/herramienta/argumentos/resultado/exito/latencia_ms) —
+incluyendo el camino de fallo, que loguea `exito=false` y relanza la excepción sin tragársela.
+Montado en `agente.py` vía `lifespan` de FastAPI (`app.state.mcp`, cerrado ordenadamente en
+shutdown); todavía sin ninguna tool real conectada — eso es WP-08 (Notion) y WP-10 (Calendar).
+`nucleo/evaluacion/test_mcp_cliente.py` cubre el plumbing con un servidor MCP simulado (no
+requiere credenciales de Notion): llamada exitosa logueada, fallo logueado con `exito=False` y
+relanzado, sesión reutilizada entre dos llamadas, y error claro ante un servidor no registrado.
